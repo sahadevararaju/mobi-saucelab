@@ -1,5 +1,6 @@
 import re
 import time
+from datetime import datetime
 from pathlib import Path
 from xml.etree import ElementTree
 
@@ -16,6 +17,19 @@ SCREENSHOT_DIR = Path("reports/screenshots")
 UI_DUMP_DIR = Path("reports/ui_dumps")
 MAX_HOME_TOOLTIPS = 10
 MAX_PROMOTIONAL_SCREENS = 5
+EXECUTION_ID = None
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _initialize_evidence_execution_id():
+    _get_execution_id(reset=True)
+
+
+def _get_execution_id(reset=False):
+    global EXECUTION_ID
+    if reset or EXECUTION_ID is None:
+        EXECUTION_ID = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return EXECUTION_ID
 
 TEST_CASES = {
     "TC001": (
@@ -54,12 +68,12 @@ TEST_CASES = {
         "Dismiss the promotional screen if displayed and wait for the home screen.",
         "The promotional screen is closed and the ATOM Store home screen appears.",
      ),
-    # "TC007": (
-    #     "Verify the user can open the Popular screen",
-    #     "Popular",
-    #     "Tap the Popular chip on the home screen.",
-    #     "The displayed screen changes to the Popular content.",
-    # ),
+    "TC007": (
+        "Complete a Top Up transaction using a scratch card",
+        "Configured ATOM phone number; supplied scratch card",
+        "Enter the configured phone number and scratch card, then submit the Top Up request.",
+        "The scratch card transaction is accepted and the application confirms success.",
+    ),
 #     "TC008": (
 #         "Verify the user can select Burmese",
 #         "Burmese",
@@ -208,15 +222,95 @@ def _run_testcase(node, testcase_id, test_function, *args):
     except Exception as error:
         result["Result"] = "Failed"
         result["Error Message"] = str(error)
+        driver = next(
+            (
+                argument
+                for argument in args
+                if hasattr(argument, "page_source")
+                and hasattr(argument, "get_screenshot_as_png")
+            ),
+            None,
+        )
+        if driver is not None:
+            try:
+                _capture_evidence(driver, testcase_id, "failure")
+            except Exception as evidence_error:
+                print(f"Failure evidence capture failed: {evidence_error}")
         raise
     else:
         result["Result"] = "Passed"
         result["Error Message"] = ""
+        driver = next(
+            (
+                argument
+                for argument in args
+                if hasattr(argument, "page_source")
+                and hasattr(argument, "get_screenshot_as_png")
+            ),
+            None,
+        )
+        if driver is not None:
+            try:
+                _capture_evidence(driver, testcase_id, "completed")
+            except Exception as evidence_error:
+                print(f"Completion evidence capture failed: {evidence_error}")
 
 
 def _save_screenshot(driver, filename):
+    stem = Path(filename).stem
+    match = re.match(
+        r"atom_store_(tc\d+)(?:_(.+))?",
+        stem,
+        re.IGNORECASE,
+    )
+    if match:
+        testcase_id, stage = match.groups()
+        stage = stage or "screen"
+    else:
+        testcase_id, stage = "TC000", stem
+    return _capture_evidence(driver, testcase_id, stage)
+
+
+def _capture_evidence(driver, testcase_id, stage):
+    execution_id = _get_execution_id()
+    safe_testcase = re.sub(r"[^a-z0-9]+", "", testcase_id.lower())
+    safe_stage = re.sub(r"[^a-z0-9]+", "_", stage.lower()).strip("_")
     SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
-    driver.save_screenshot(str(SCREENSHOT_DIR / filename))
+    UI_DUMP_DIR.mkdir(parents=True, exist_ok=True)
+
+    screenshot_data = driver.get_screenshot_as_png()
+    hierarchy_data = driver.page_source
+    sequence = 0
+    while True:
+        suffix = f"_{sequence}" if sequence else ""
+        stem = (
+            f"atom_store_{safe_testcase}_{safe_stage}_"
+            f"{execution_id}{suffix}"
+        )
+        screenshot_path = SCREENSHOT_DIR / f"{stem}.png"
+        hierarchy_path = UI_DUMP_DIR / f"{stem}.xml"
+
+        try:
+            screenshot_file = screenshot_path.open("xb")
+        except FileExistsError:
+            sequence += 1
+            continue
+
+        try:
+            hierarchy_file = hierarchy_path.open("x", encoding="utf-8")
+        except FileExistsError:
+            screenshot_file.close()
+            screenshot_path.unlink()
+            sequence += 1
+            continue
+
+        with screenshot_file, hierarchy_file:
+            screenshot_file.write(screenshot_data)
+            hierarchy_file.write(hierarchy_data)
+        print(
+            f"Evidence saved: {screenshot_path} and {hierarchy_path}"
+        )
+        return screenshot_path, hierarchy_path
 
 
 @pytest.mark.sauce
@@ -229,7 +323,7 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC004", _tc004_open_login_screen, atom_store_driver),
         ("TC005", _tc005_enter_mobile_number, atom_store_driver, capsys),
         ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
-        # ("TC007", _tc007_open_popular_window, atom_store_driver),
+        ("TC007", _tc007_click_top_up_icon, atom_store_driver),
         # ("TC008", _tc008_select_burmese_language, atom_store_driver),
         # ("TC009", _tc009_open_login_screen, atom_store_driver),
         # ("TC010", _tc010_enter_mobile_number, atom_store_driver, capsys),
@@ -595,6 +689,155 @@ def _tc006_verify_store_home_screen(driver):
     _verify_store_home_screen(driver, "TC006", "atom_store_tc006")
 
 
+def _tc007_click_top_up_icon(driver):
+    scratch_card_number = "36885710672098262"
+
+    if not _is_store_home_screen(driver):
+        raise AssertionError(
+            "TC007 requires the authenticated ATOM Store home screen."
+        )
+
+    driver.execute_script(
+        "mobile: clickGesture",
+        {"x": 168, "y": 644},
+    )
+
+    wait = WebDriverWait(driver, 30)
+    wait.until(
+        EC.visibility_of_element_located(
+            (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Top Up")')
+        )
+    )
+    _capture_evidence(driver, "TC007", "top_up")
+
+    edit_fields = wait.until(
+        lambda current_driver: sorted(
+            (
+                field
+                for field in current_driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.widget.EditText",
+                )
+                if field.is_displayed() and field.is_enabled()
+            ),
+            key=lambda field: field.location["y"],
+        )
+        if len(
+            [
+                field
+                for field in current_driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.widget.EditText",
+                )
+                if field.is_displayed() and field.is_enabled()
+            ]
+        ) >= 2
+        else False
+    )
+    phone_field, scratch_card_field = edit_fields[:2]
+
+    if not MOBILE_NUMBER:
+        raise AssertionError("MOBILE_NUMBER is not configured in .env.")
+    phone_field.clear()
+    phone_field.send_keys(MOBILE_NUMBER)
+    if phone_field.get_attribute("text") != MOBILE_NUMBER:
+        raise AssertionError(
+            "The configured ATOM phone number was not entered correctly."
+        )
+
+    scratch_card_field.clear()
+    scratch_card_field.send_keys(scratch_card_number)
+    if scratch_card_field.get_attribute("text") != scratch_card_number:
+        raise AssertionError("The scratch card number was not entered correctly.")
+    _capture_evidence(driver, "TC007", "details_entered")
+
+    top_up_button = wait.until(
+        lambda current_driver: next(
+            (
+                element
+                for element in current_driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.view.View",
+                )
+                if element.is_displayed()
+                and element.is_enabled()
+                and element.get_attribute("clickable") == "true"
+                and 1490 <= element.location["y"] <= 1625
+            ),
+            False,
+        )
+    )
+    before_submit = driver.page_source
+    top_up_button.click()
+
+    def _okay_dialog_visible(current_driver):
+        return any(
+            element.is_displayed() and element.is_enabled()
+            for element in current_driver.find_elements(
+                AppiumBy.ANDROID_UIAUTOMATOR,
+                'new UiSelector().textMatches("(?i)^okay$")',
+            )
+        )
+
+    try:
+        wait.until(
+            lambda current_driver: (
+                current_driver.page_source != before_submit
+                or _okay_dialog_visible(current_driver)
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "response_timeout")
+        raise AssertionError(
+            "No application response was detected after submitting the "
+            "Top Up request. Result evidence was captured."
+        ) from error
+
+    response_source = driver.page_source
+    _capture_evidence(driver, "TC007", "response_received")
+    okay_buttons = [
+        element
+        for element in driver.find_elements(
+            AppiumBy.ANDROID_UIAUTOMATOR,
+            'new UiSelector().textMatches("(?i)^okay$")',
+        )
+        if element.is_displayed() and element.is_enabled()
+    ]
+    if okay_buttons:
+        root = ElementTree.fromstring(response_source)
+        message_parts = []
+        for node in root.iter():
+            value = (node.get("text") or "").strip()
+            if value and value.casefold() != "okay" and value not in message_parts:
+                message_parts.append(value)
+        error_message = " ".join(message_parts) or "Invalid voucher dialog displayed."
+        if MOBILE_NUMBER:
+            error_message = error_message.replace(MOBILE_NUMBER, "[redacted]")
+
+        _capture_evidence(driver, "TC007", "invalid_voucher")
+        okay_buttons[0].click()
+        try:
+            wait.until(
+                lambda current_driver: not _okay_dialog_visible(current_driver)
+            )
+        except Exception as dismissal_error:
+            _capture_evidence(driver, "TC007", "after_dismissal_attempt")
+            raise AssertionError(
+                "Top Up voucher was rejected and the Okay dialog could not "
+                f"be dismissed. Application message: {error_message}"
+            ) from dismissal_error
+        _capture_evidence(driver, "TC007", "after_dismissal")
+        raise AssertionError(f"Top Up voucher was rejected: {error_message}")
+
+    _capture_evidence(driver, "TC007", "outcome_unverified")
+    raise AssertionError(
+        "The Top Up response changed the screen, but no verified success "
+        "landmark is defined by the captured UI evidence. Inspect "
+        "the TC007 outcome_unverified XML and PNG evidence before "
+        "adding a success assertion."
+    )
+
+
 def _is_ready_for_post_login_checks(driver):
     return _is_notification_permission_popup_visible(driver) or (
         driver.current_package == ATOM_APP_PACKAGE
@@ -876,13 +1119,26 @@ def _save_tc006_ui_hierarchy(snapshots):
         snapshot.append(ElementTree.fromstring(source))
 
     UI_DUMP_DIR.mkdir(parents=True, exist_ok=True)
-    path = UI_DUMP_DIR / "atom_store_tc006.xml"
-    ElementTree.ElementTree(root).write(
-        path,
-        encoding="utf-8",
-        xml_declaration=True,
-    )
-    return path
+    execution_id = _get_execution_id()
+    stage = re.sub(
+        r"[^a-z0-9]+", "_", snapshots[-1][0].lower()
+    ).strip("_")
+    sequence = 0
+    while True:
+        suffix = f"_{sequence}" if sequence else ""
+        path = UI_DUMP_DIR / (
+            f"atom_store_tc006_{stage}_{execution_id}{suffix}.xml"
+        )
+        try:
+            with path.open("xb") as output:
+                ElementTree.ElementTree(root).write(
+                    output,
+                    encoding="utf-8",
+                    xml_declaration=True,
+                )
+            return path
+        except FileExistsError:
+            sequence += 1
 
 
 def _dismiss_promotional_screen(driver):
@@ -1040,6 +1296,7 @@ def _verify_store_home_screen(driver, testcase, screenshot_prefix):
     wait.until(_is_ready_for_post_login_checks)
 
     hierarchy_snapshots = [("before_dismissal", driver.page_source)]
+    _capture_evidence(driver, "TC006", "before_dismissal")
     hierarchy_path = _save_tc006_ui_hierarchy(hierarchy_snapshots)
 
     try:
@@ -1048,29 +1305,34 @@ def _verify_store_home_screen(driver, testcase, screenshot_prefix):
         hierarchy_snapshots.append(
             ("after_dismissal_attempt", driver.page_source)
         )
+        _capture_evidence(driver, "TC006", "after_dismissal_attempt")
         hierarchy_path = _save_tc006_ui_hierarchy(hierarchy_snapshots)
-        screenshot_path = f"{screenshot_prefix}_dismissal_failed.png"
-        _save_screenshot(driver, screenshot_path)
+        screenshot_path, screenshot_hierarchy_path = _save_screenshot(
+            driver,
+            f"{screenshot_prefix}_dismissal_failed.png",
+        )
         print(
             f"{testcase} did not reach the home screen. "
             f"Current UI hierarchy saved to {hierarchy_path}; "
-            f"screenshot saved to reports/screenshots/{screenshot_path}."
+            f"screenshot saved to {screenshot_path}; "
+            f"screenshot hierarchy saved to {screenshot_hierarchy_path}."
         )
         raise
 
     hierarchy_snapshots.append(("home_screen", driver.page_source))
+    _capture_evidence(driver, "TC006", "home_screen")
     hierarchy_path = _save_tc006_ui_hierarchy(hierarchy_snapshots)
 
-    _save_screenshot(
+    screenshot_path, screenshot_hierarchy_path = _save_screenshot(
         driver,
         f"{screenshot_prefix}_home_verified.png",
     )
     print(
         "PASS: ATOM Store home screen is displayed with the Popular control "
         "and no OTP entry fields. "
-        f"Home screen evidence saved to reports/screenshots/"
-        f"{screenshot_prefix}_home_verified.png. "
-        f"UI hierarchy saved to {hierarchy_path}."
+        f"Home screen evidence saved to {screenshot_path}; "
+        f"screenshot hierarchy saved to {screenshot_hierarchy_path}; "
+        f"TC006 snapshot hierarchy saved to {hierarchy_path}."
     )
 
 

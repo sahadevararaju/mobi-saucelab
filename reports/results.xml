@@ -1,1 +1,165 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="244.343" timestamp="2026-11-11T16:23:12.145889+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="244.271" /></testsuite></testsuites>
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="299.109" timestamp="2026-11-12T13:55:04.647937+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="298.842"><failure message="AssertionError: The scratch card number was not entered correctly.">atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="bcc76126-a5d0-4d05-b711-582e6e5f4d29")&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x0000026D5589F8C0&gt;
+request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;&gt;
+
+    @pytest.mark.sauce
+    def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
+        _initialize_test_case_report(request.node)
+        testcases = [
+            ("TC001", _tc001_launch_latest_apk, atom_store_driver),
+            ("TC002", _tc002_verify_welcome_screen, atom_store_driver),
+            ("TC003", _tc003_select_english, atom_store_driver),
+            ("TC004", _tc004_open_login_screen, atom_store_driver),
+            ("TC005", _tc005_enter_mobile_number, atom_store_driver, capsys),
+            ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
+            ("TC007", _tc007_click_top_up_icon, atom_store_driver),
+            # ("TC008", _tc008_select_burmese_language, atom_store_driver),
+            # ("TC009", _tc009_open_login_screen, atom_store_driver),
+            # ("TC010", _tc010_enter_mobile_number, atom_store_driver, capsys),
+            # ("TC011", _tc011_verify_store_home_screen, atom_store_driver),
+            # ("TC012", _tc012_select_chinese_language, atom_store_driver),
+            # ("TC013", _tc013_open_login_screen, atom_store_driver),
+            # ("TC014", _tc014_enter_mobile_number, atom_store_driver, capsys),
+            # ("TC015", _tc015_verify_store_home_screen, atom_store_driver),
+            # ("TC016", _tc016_reject_empty_mobile_number, atom_store_driver),
+            # ("TC017", _tc017_reject_invalid_mobile_number, atom_store_driver),
+            # (
+            #     "TC018",
+            #     _tc018_reject_empty_burmese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC019",
+            #     _tc019_reject_invalid_burmese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC020",
+            #     _tc020_reject_empty_chinese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC021",
+            #     _tc021_reject_invalid_chinese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC022",
+            #     _tc022_reject_overlong_english_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC023",
+            #     _tc023_reject_special_characters_english,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC024",
+            #     _tc024_reject_alphabetic_english_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC025",
+            #     _tc025_reject_overlong_burmese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC026",
+            #     _tc026_reject_special_characters_burmese,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC027",
+            #     _tc027_reject_alphabetic_burmese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC028",
+            #     _tc028_reject_overlong_chinese_mobile_number,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC029",
+            #     _tc029_reject_special_characters_chinese,
+            #     atom_store_driver,
+            # ),
+            # (
+            #     "TC030",
+            #     _tc030_reject_alphabetic_chinese_mobile_number,
+            #     atom_store_driver,
+            # ),
+        ]
+        for testcase in testcases:
+&gt;           _run_testcase(request.node, testcase[0], testcase[1], *testcase[2:])
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:404: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+MobileAutomationPython\tests\test_native_androidAPIGW.py:221: in _run_testcase
+    test_function(*args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+driver = &lt;appium.webdriver.webdriver.WebDriver (session="bcc76126-a5d0-4d05-b711-582e6e5f4d29")&gt;
+
+    def _tc007_click_top_up_icon(driver):
+        scratch_card_number = "36885710672098262"
+    
+        if not _is_store_home_screen(driver):
+            raise AssertionError(
+                "TC007 requires the authenticated ATOM Store home screen."
+            )
+    
+        driver.execute_script(
+            "mobile: clickGesture",
+            {"x": 168, "y": 644},
+        )
+    
+        wait = WebDriverWait(driver, 30)
+        wait.until(
+            EC.visibility_of_element_located(
+                (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Top Up")')
+            )
+        )
+        _capture_evidence(driver, "TC007", "top_up")
+    
+        edit_fields = wait.until(
+            lambda current_driver: sorted(
+                (
+                    field
+                    for field in current_driver.find_elements(
+                        AppiumBy.CLASS_NAME,
+                        "android.widget.EditText",
+                    )
+                    if field.is_displayed() and field.is_enabled()
+                ),
+                key=lambda field: field.location["y"],
+            )
+            if len(
+                [
+                    field
+                    for field in current_driver.find_elements(
+                        AppiumBy.CLASS_NAME,
+                        "android.widget.EditText",
+                    )
+                    if field.is_displayed() and field.is_enabled()
+                ]
+            ) &gt;= 2
+            else False
+        )
+        phone_field, scratch_card_field = edit_fields[:2]
+    
+        if not MOBILE_NUMBER:
+            raise AssertionError("MOBILE_NUMBER is not configured in .env.")
+        phone_field.clear()
+        phone_field.send_keys(MOBILE_NUMBER)
+        if phone_field.get_attribute("text") != MOBILE_NUMBER:
+            raise AssertionError(
+                "The configured ATOM phone number was not entered correctly."
+            )
+    
+        scratch_card_field.clear()
+        scratch_card_field.send_keys(scratch_card_number)
+        if scratch_card_field.get_attribute("text") != scratch_card_number:
+&gt;           raise AssertionError("The scratch card number was not entered correctly.")
+E           AssertionError: The scratch card number was not entered correctly.
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:751: AssertionError</failure></testcase></testsuite></testsuites>
