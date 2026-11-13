@@ -123,6 +123,12 @@ TEST_CASES = {
         "Click Super Htaw and inspect the resulting screen state.",
         "The Super Htaw option responds to the click.",
     ),
+    "TC016": (
+        "Select Flexiplan from the Packages screen",
+        "Packages screen; Flexiplan option",
+        "Return to Packages using Back or navigate from Home through Packs, then click Flexiplan.",
+        "The Flexiplan option responds to the click.",
+    ),
  }
 
 
@@ -243,6 +249,7 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC013", _tc013_click_telegram, atom_store_driver),
         ("TC014", _tc014_click_megapack, atom_store_driver),
         ("TC015", _tc015_click_super_htaw, atom_store_driver),
+        ("TC016", _tc016_click_flexiplan, atom_store_driver),
     ]
     tc007_error = None
     for testcase in testcases:
@@ -550,45 +557,9 @@ def _tc006_verify_store_home_screen(driver):
 
 
 def _tc008_click_packs_icon(driver):
-    if not _is_store_home_screen(driver):
+    if not _is_home_navigation_selected(driver):
         _capture_evidence(driver, "TC008", "008_before_home_navigation")
-        home_control = _tc007_find_accessible_clickable_parent(
-            driver,
-            "Home",
-        )
-        if home_control is None:
-            home_control = next(
-                (
-                    control
-                    for control in driver.find_elements(
-                        AppiumBy.ACCESSIBILITY_ID,
-                        "Home",
-                    )
-                    if control.is_displayed()
-                    and control.is_enabled()
-                    and control.get_attribute("clickable") == "true"
-                ),
-                None,
-            )
-        if home_control is None:
-            home_control = _tc007_find_accessible_clickable_parent(
-                driver,
-                "Back",
-            )
-        if home_control is not None:
-            home_control.click()
-        else:
-            back_bounds = _tc007_bounds_for_accessibility_label(
-                driver.page_source,
-                "Back",
-            )
-            if back_bounds is None:
-                raise AssertionError(
-                    "TC008 requires the authenticated Home screen; neither a "
-                    "clickable Home nor a visible Back control was available."
-                )
-            _tc007_click_bounds(driver, back_bounds)
-        WebDriverWait(driver, 30).until(_is_store_home_screen)
+        _tc008_return_home(driver)
 
     _capture_evidence(driver, "TC008", "008_before_click_packs")
     packs_icon = WebDriverWait(driver, 20).until(
@@ -608,6 +579,69 @@ def _tc008_click_packs_icon(driver):
         )
     )
     _capture_evidence(driver, "TC008", "008_packages_screen")
+
+
+def _tc008_return_home(driver):
+    for _ in range(5):
+        if _is_home_navigation_selected(driver):
+            return
+
+        before_source = driver.page_source
+        home_control = _tc007_find_accessible_clickable_parent(driver, "Home")
+        if home_control is None:
+            home_control = next(
+                (
+                    control
+                    for control in driver.find_elements(
+                        AppiumBy.ACCESSIBILITY_ID,
+                        "Home",
+                    )
+                    if control.is_displayed()
+                    and control.is_enabled()
+                    and control.get_attribute("clickable") == "true"
+                ),
+                None,
+            )
+
+        if home_control is not None:
+            home_control.click()
+        else:
+            back_bounds = _tc007_bounds_for_accessibility_label(
+                before_source,
+                "Back",
+            )
+            if back_bounds is not None:
+                _tc007_click_bounds(driver, back_bounds)
+            else:
+                driver.back()
+
+        try:
+            WebDriverWait(driver, 6).until(
+                lambda current_driver: (
+                    _is_home_navigation_selected(current_driver)
+                    or current_driver.page_source != before_source
+                )
+            )
+        except TimeoutException:
+            continue
+
+    if not _is_home_navigation_selected(driver):
+        raise AssertionError(
+            "TC008 could not return Home after using the Home control or "
+            "following up to five Back actions."
+        )
+
+
+def _is_home_navigation_selected(driver):
+    home_controls = driver.find_elements(
+        AppiumBy.ID,
+        f"{ATOM_APP_PACKAGE}:id/dashboardFragment",
+    )
+    return any(
+        control.is_displayed()
+        and control.get_attribute("selected") == "true"
+        for control in home_controls
+    )
 
 
 def _tc007_bounds_for_accessibility_label(source, label):
@@ -645,6 +679,10 @@ def _tc014_click_megapack(driver):
 
 def _tc015_click_super_htaw(driver):
     _click_package_item(driver, "Super Htaw", "TC015")
+
+
+def _tc016_click_flexiplan(driver):
+    _click_package_item(driver, "Flexiplan", "TC016")
 
 
 def _click_package_item(driver, label, testcase):
