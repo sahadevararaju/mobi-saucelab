@@ -13,8 +13,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from utils.sauce_config import ATOM_APP_PACKAGE, MOBILE_NUMBER
 
 
-SCREENSHOT_DIR = Path("reports/screenshots")
-UI_DUMP_DIR = Path("reports/ui_dumps")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+SCREENSHOT_DIR = PROJECT_ROOT / "reports" / "screenshots"
+UI_DUMP_DIR = PROJECT_ROOT / "reports" / "ui_dumps"
 MAX_HOME_TOOLTIPS = 10
 MAX_PROMOTIONAL_SCREENS = 5
 EXECUTION_ID = None
@@ -69,149 +70,59 @@ TEST_CASES = {
         "The promotional screen is closed and the ATOM Store home screen appears.",
      ),
     "TC007": (
-        "Complete a Top Up transaction using a scratch card",
-        "Configured ATOM phone number; supplied scratch card",
-        "Enter the configured phone number and scratch card, then submit the Top Up request.",
-        "The scratch card transaction is accepted and the application confirms success.",
+        "Complete scratch-card and KBZPay Top Up flows",
+        "Configured ATOM phone number; scratch card; KBZPay amount 1,000",
+        "Submit the scratch card, then complete the Other Digital Payments KBZPay confirmation flow.",
+        "The expected scratch-card response is handled and the KBZPay transaction reaches a verified success state.",
     ),
-#     "TC008": (
-#         "Verify the user can select Burmese",
-#         "Burmese",
-#         "Open the language selector and choose Burmese.",
-#         "Burmese is selected and the app returns to the Welcome screen.",
-#     ),
-#     "TC009": (
-#         "Verify the user can open the login screen in Burmese",
-#         "Burmese",
-#         "Tap the login option on the Welcome screen.",
-#         "The login screen and mobile-number field are displayed.",
-#     ),
-#     "TC010": (
-#         "Verify the user can log in with Burmese selected",
-#         "Configured mobile number and SMS OTP",
-#         "Enter the configured mobile number and submit the received OTP.",
-#         "The mobile number and valid OTP are accepted.",
-#     ),
-#     "TC011": (
-#         "Verify the ATOM Store home screen after Burmese login",
-#         "Burmese; authenticated user",
-#         "Wait for the home screen after OTP submission.",
-#         "The app remains foregrounded and OTP fields are no longer displayed.",
-#     ),
-#     "TC012": (
-#         "Verify the user can select Chinese",
-#         "Chinese",
-#         "Open the language selector and choose Chinese.",
-#         "Chinese is selected and the app returns to the Welcome screen.",
-#     ),
-#     "TC013": (
-#         "Verify the user can open the login screen in Chinese",
-#         "Chinese",
-#         "Tap the login option on the Welcome screen.",
-#         "The login screen and mobile-number field are displayed.",
-#     ),
-#     "TC014": (
-#         "Verify the user can log in with Chinese selected",
-#         "Configured mobile number and SMS OTP",
-#         "Enter the configured mobile number and submit the received OTP.",
-#         "The mobile number and valid OTP are accepted.",
-#     ),
-#     "TC015": (
-#         "Verify the ATOM Store home screen after Chinese login",
-#         "Chinese; authenticated user",
-#         "Wait for the home screen after OTP submission.",
-#         "The app remains foregrounded and OTP fields are no longer displayed.",
-#     ),
-#     "TC016": (
-#         "Verify an empty English mobile number is rejected",
-#         "Empty mobile number",
-#         "Submit the login form without entering a mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC017": (
-#         "Verify an invalid English mobile number is rejected",
-#         "0000000000",
-#         "Submit an invalid mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC018": (
-#         "Verify an empty Burmese mobile number is rejected",
-#         "Empty mobile number; Burmese",
-#         "Submit the login form without entering a mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC019": (
-#         "Verify an invalid Burmese mobile number is rejected",
-#         "0000000000; Burmese",
-#         "Submit an invalid mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC020": (
-#         "Verify an empty Chinese mobile number is rejected",
-#         "Empty mobile number; Chinese",
-#         "Submit the login form without entering a mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC021": (
-#         "Verify an invalid Chinese mobile number is rejected",
-#         "0000000000; Chinese",
-#         "Submit an invalid mobile number.",
-#         "The app remains on the mobile-number entry screen.",
-#     ),
-#     "TC022": (
-#         "Verify an overlong English mobile number is rejected",
-#         "0123456789012345",
-#         "Enter and submit a number longer than the maximum length.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC023": (
-#         "Verify special characters are rejected for English",
-#         "@#$%&*",
-#         "Enter and submit special characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC024": (
-#         "Verify alphabetic input is rejected for English",
-#         "abcdefgh",
-#         "Enter and submit alphabetic characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC025": (
-#         "Verify an overlong Burmese mobile number is rejected",
-#         "0123456789012345; Burmese",
-#         "Enter and submit a number longer than the maximum length.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC026": (
-#         "Verify special characters are rejected for Burmese",
-#         "@#$%&*; Burmese",
-#         "Enter and submit special characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC027": (
-#         "Verify alphabetic input is rejected for Burmese",
-#         "abcdefgh; Burmese",
-#         "Enter and submit alphabetic characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC028": (
-#         "Verify an overlong Chinese mobile number is rejected",
-#         "0123456789012345; Chinese",
-#         "Enter and submit a number longer than the maximum length.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC029": (
-#         "Verify special characters are rejected for Chinese",
-#         "@#$%&*; Chinese",
-#         "Enter and submit special characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
-#     "TC030": (
-#         "Verify alphabetic input is rejected for Chinese",
-#         "abcdefgh; Chinese",
-#         "Enter and submit alphabetic characters in the mobile-number field.",
-#         "Please type valid ATOM Number.",
-#     ),
+    "TC008": (
+        "Click on Packs Icon and verify Packages window is displayed",
+        "Authenticated user on the ATOM Store Home screen",
+        "Verify Home, capture its evidence, click the Packs navigation icon, and verify the Packages title.",
+        "The Packages screen is displayed with visible text exactly 'Packages'.",
+    ),
+    "TC009": (
+        "Select KyiKwar from the Packages screen",
+        "Packages screen; KyiKwar option",
+        "Click KyiKwar and inspect the resulting screen state.",
+        "The KyiKwar option responds to the click.",
+    ),
+    "TC010": (
+        "Select All-in-One from the Packages screen",
+        "Packages screen; All-in-One option",
+        "Click All-in-One and inspect the resulting screen state.",
+        "The All-in-One option responds to the click.",
+    ),
+    "TC011": (
+        "Select TikTok from the Packages screen",
+        "Packages screen; TikTok option",
+        "Click TikTok and inspect the resulting screen state.",
+        "The TikTok option responds to the click.",
+    ),
+    "TC012": (
+        "Select Youtube from the Packages screen",
+        "Packages screen; Youtube option",
+        "Click Youtube and inspect the resulting screen state.",
+        "The Youtube option responds to the click.",
+    ),
+    "TC013": (
+        "Select Telegram from the Packages screen",
+        "Packages screen; Telegram option",
+        "Click Telegram and inspect the resulting screen state.",
+        "The Telegram option responds to the click.",
+    ),
+    "TC014": (
+        "Select MegaPack from the Packages screen",
+        "Packages screen; MegaPack option",
+        "Click MegaPack and inspect the resulting screen state.",
+        "The MegaPack option responds to the click.",
+    ),
+    "TC015": (
+        "Select Super Htaw from the Packages screen",
+        "Packages screen; Super Htaw option",
+        "Click Super Htaw and inspect the resulting screen state.",
+        "The Super Htaw option responds to the click.",
+    ),
  }
 
 
@@ -273,7 +184,7 @@ def _save_screenshot(driver, filename):
 
 def _capture_evidence(driver, testcase_id, stage):
     execution_id = _get_execution_id()
-    safe_testcase = re.sub(r"[^a-z0-9]+", "", testcase_id.lower())
+    safe_testcase = re.sub(r"[^a-z0-9_]+", "", testcase_id.lower())
     safe_stage = re.sub(r"[^a-z0-9]+", "_", stage.lower()).strip("_")
     SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
     UI_DUMP_DIR.mkdir(parents=True, exist_ok=True)
@@ -324,84 +235,33 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC005", _tc005_enter_mobile_number, atom_store_driver, capsys),
         ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
         ("TC007", _tc007_click_top_up_icon, atom_store_driver),
-        # ("TC008", _tc008_select_burmese_language, atom_store_driver),
-        # ("TC009", _tc009_open_login_screen, atom_store_driver),
-        # ("TC010", _tc010_enter_mobile_number, atom_store_driver, capsys),
-        # ("TC011", _tc011_verify_store_home_screen, atom_store_driver),
-        # ("TC012", _tc012_select_chinese_language, atom_store_driver),
-        # ("TC013", _tc013_open_login_screen, atom_store_driver),
-        # ("TC014", _tc014_enter_mobile_number, atom_store_driver, capsys),
-        # ("TC015", _tc015_verify_store_home_screen, atom_store_driver),
-        # ("TC016", _tc016_reject_empty_mobile_number, atom_store_driver),
-        # ("TC017", _tc017_reject_invalid_mobile_number, atom_store_driver),
-        # (
-        #     "TC018",
-        #     _tc018_reject_empty_burmese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC019",
-        #     _tc019_reject_invalid_burmese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC020",
-        #     _tc020_reject_empty_chinese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC021",
-        #     _tc021_reject_invalid_chinese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC022",
-        #     _tc022_reject_overlong_english_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC023",
-        #     _tc023_reject_special_characters_english,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC024",
-        #     _tc024_reject_alphabetic_english_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC025",
-        #     _tc025_reject_overlong_burmese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC026",
-        #     _tc026_reject_special_characters_burmese,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC027",
-        #     _tc027_reject_alphabetic_burmese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC028",
-        #     _tc028_reject_overlong_chinese_mobile_number,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC029",
-        #     _tc029_reject_special_characters_chinese,
-        #     atom_store_driver,
-        # ),
-        # (
-        #     "TC030",
-        #     _tc030_reject_alphabetic_chinese_mobile_number,
-        #     atom_store_driver,
-        # ),
+        ("TC008", _tc008_click_packs_icon, atom_store_driver),
+        ("TC009", _tc009_click_kyikwar, atom_store_driver),
+        ("TC010", _tc010_click_all_in_one, atom_store_driver),
+        ("TC011", _tc011_click_tiktok, atom_store_driver),
+        ("TC012", _tc012_click_youtube, atom_store_driver),
+        ("TC013", _tc013_click_telegram, atom_store_driver),
+        ("TC014", _tc014_click_megapack, atom_store_driver),
+        ("TC015", _tc015_click_super_htaw, atom_store_driver),
     ]
+    tc007_error = None
     for testcase in testcases:
-        _run_testcase(request.node, testcase[0], testcase[1], *testcase[2:])
+        try:
+            _run_testcase(
+                request.node,
+                testcase[0],
+                testcase[1],
+                *testcase[2:],
+            )
+        except Exception as error:
+            if testcase[0] != "TC007":
+                raise
+            tc007_error = error
+
+    if tc007_error is not None:
+        raise AssertionError(
+            f"TC007 failed; later cases were still executed: {tc007_error}"
+        ) from tc007_error
 
 
 def _initialize_test_case_report(node):
@@ -689,9 +549,139 @@ def _tc006_verify_store_home_screen(driver):
     _verify_store_home_screen(driver, "TC006", "atom_store_tc006")
 
 
-def _tc007_click_top_up_icon(driver):
-    scratch_card_number = "36885710672098262"
+def _tc008_click_packs_icon(driver):
+    if not _is_store_home_screen(driver):
+        _capture_evidence(driver, "TC008", "008_before_home_navigation")
+        home_control = _tc007_find_accessible_clickable_parent(
+            driver,
+            "Home",
+        )
+        if home_control is None:
+            home_control = next(
+                (
+                    control
+                    for control in driver.find_elements(
+                        AppiumBy.ACCESSIBILITY_ID,
+                        "Home",
+                    )
+                    if control.is_displayed()
+                    and control.is_enabled()
+                    and control.get_attribute("clickable") == "true"
+                ),
+                None,
+            )
+        if home_control is None:
+            home_control = _tc007_find_accessible_clickable_parent(
+                driver,
+                "Back",
+            )
+        if home_control is not None:
+            home_control.click()
+        else:
+            back_bounds = _tc007_bounds_for_accessibility_label(
+                driver.page_source,
+                "Back",
+            )
+            if back_bounds is None:
+                raise AssertionError(
+                    "TC008 requires the authenticated Home screen; neither a "
+                    "clickable Home nor a visible Back control was available."
+                )
+            _tc007_click_bounds(driver, back_bounds)
+        WebDriverWait(driver, 30).until(_is_store_home_screen)
 
+    _capture_evidence(driver, "TC008", "008_before_click_packs")
+    packs_icon = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ACCESSIBILITY_ID, "Packs")
+        )
+    )
+    packs_icon.click()
+    WebDriverWait(driver, 30).until(
+        lambda current_driver: any(
+            element.is_displayed()
+            and element.text == "Packages"
+            for element in current_driver.find_elements(
+                AppiumBy.ANDROID_UIAUTOMATOR,
+                'new UiSelector().text("Packages")',
+            )
+        )
+    )
+    _capture_evidence(driver, "TC008", "008_packages_screen")
+
+
+def _tc007_bounds_for_accessibility_label(source, label):
+    root = ElementTree.fromstring(source)
+    target = label.strip().casefold()
+    for node in root.iter():
+        if (node.get("content-desc") or "").strip().casefold() == target:
+            return _tc007_parse_bounds(node.get("bounds", ""))
+    return None
+
+
+def _tc009_click_kyikwar(driver):
+    _click_package_item(driver, "KyiKwar", "TC009")
+
+
+def _tc010_click_all_in_one(driver):
+    _click_package_item(driver, "All-in-One", "TC010")
+
+
+def _tc011_click_tiktok(driver):
+    _click_package_item(driver, "TikTok", "TC011")
+
+
+def _tc012_click_youtube(driver):
+    _click_package_item(driver, "Youtube", "TC012")
+
+
+def _tc013_click_telegram(driver):
+    _click_package_item(driver, "Telegram", "TC013")
+
+
+def _tc014_click_megapack(driver):
+    _click_package_item(driver, "MegaPack", "TC014")
+
+
+def _tc015_click_super_htaw(driver):
+    _click_package_item(driver, "Super Htaw", "TC015")
+
+
+def _click_package_item(driver, label, testcase):
+    packages_title = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Packages")')
+    if _tc007_find_text_element(driver, label) is None:
+        driver.back()
+        WebDriverWait(driver, 20).until(
+            lambda current_driver: any(
+                element.is_displayed()
+                for element in current_driver.find_elements(*packages_title)
+            )
+        )
+
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _tc007_find_text_element(current_driver, label) or False
+        )
+    )
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    _tc007_click_text(driver, label)
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, testcase, "click_no_visible_response")
+        raise AssertionError(
+            f"Clicking {label} produced no visible screen change."
+        ) from error
+    _capture_evidence(driver, testcase, f"{testcase.lower()}_{label.lower().replace('-', '_')}")
+
+
+def _tc007_click_top_up_icon(driver):
     if not _is_store_home_screen(driver):
         raise AssertionError(
             "TC007 requires the authenticated ATOM Store home screen."
@@ -701,6 +691,669 @@ def _tc007_click_top_up_icon(driver):
         "mobile: clickGesture",
         {"x": 168, "y": 644},
     )
+    WebDriverWait(driver, 30).until(_tc007_is_top_up_screen)
+    scratch_card_response = _tc007_scratch_card_flow(driver)
+    try:
+        _tc007_other_digital_payment_flow(driver)
+    except Exception as error:
+        if scratch_card_response:
+            raise AssertionError(
+                f"{error} Scratch-card application response: "
+                f"{scratch_card_response}"
+            ) from error
+        raise
+    if scratch_card_response:
+        raise AssertionError(
+            "Scratch-card voucher was rejected; expected a valid voucher. "
+            f"Application message: {scratch_card_response}"
+        )
+
+
+def _tc007_scratch_card_flow(driver):
+    scratch_card_number = "36885710672098262"
+    wait = WebDriverWait(driver, 30)
+    if not _tc007_is_top_up_screen(driver):
+        raise AssertionError("TC007 could not verify the Top Up screen.")
+    _capture_evidence(driver, "TC007", "00_top_up_opened")
+
+    edit_fields = wait.until(
+        lambda current_driver: (
+            fields
+            if len(fields := _tc007_edit_fields(current_driver)) >= 2
+            else False
+        )
+    )
+    phone_field, scratch_card_field = edit_fields[:2]
+    if not MOBILE_NUMBER:
+        raise AssertionError("MOBILE_NUMBER is not configured in .env.")
+    phone_field.clear()
+    phone_field.send_keys(MOBILE_NUMBER)
+    if phone_field.get_attribute("text") != MOBILE_NUMBER:
+        raise AssertionError("Configured ATOM phone number entry did not match.")
+
+    scratch_card_field.clear()
+    scratch_card_field.send_keys(scratch_card_number)
+    entered_card = re.sub(r"\D", "", scratch_card_field.get_attribute("text") or "")
+    if entered_card != scratch_card_number:
+        raise AssertionError("Scratch card number entry did not match.")
+    _capture_evidence(driver, "TC007", "01_scratch_card_entry")
+
+    try:
+        before_submit = _tc007_click_top_up_submit(driver)
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "02_scratch_submit_unavailable")
+        try:
+            _tc007_return_home_after_submit_failure(driver)
+        except Exception as recovery_error:
+            raise AssertionError(
+                "The scratch-card submit control was unavailable, and the "
+                "Back control could not restore Home. Voucher validation was "
+                "not reached."
+            ) from recovery_error
+        raise AssertionError(
+            "The scratch-card submit control was not present as an enabled, "
+            "clickable control. Returned to Home for recovery; voucher "
+            "validation was not reached, so TC007 failed."
+        ) from error
+    try:
+        wait.until(
+            lambda current_driver: (
+                current_driver.page_source != before_submit
+                or _tc007_has_text(current_driver, "Okay")
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "02_scratch_card_response_timeout")
+        raise AssertionError(
+            "No response appeared after submitting the scratch-card request."
+        ) from error
+
+    response_source = driver.page_source
+    _capture_evidence(driver, "TC007", "02_scratch_card_response")
+    okay_button = _tc007_find_text_element(driver, "Okay")
+    if okay_button is None:
+        _capture_evidence(driver, "TC007", "02_scratch_card_response_unrecognized")
+        raise AssertionError(
+            "Scratch-card response did not show the expected Okay voucher "
+            "rejection, and no verified voucher-success landmark is known."
+        )
+
+    error_message = _tc007_dialog_message(response_source)
+    if MOBILE_NUMBER:
+        error_message = error_message.replace(MOBILE_NUMBER, "[redacted]")
+    try:
+        okay_button.click()
+        wait.until(lambda current_driver: not _tc007_has_text(current_driver, "Okay"))
+    except Exception as error:
+        _capture_evidence(driver, "TC007", "02_scratch_card_dismissal_failed")
+        raise AssertionError(
+            "Invalid voucher dialog was displayed but Okay could not be "
+            f"dismissed. Application message: {error_message}"
+        ) from error
+
+    _capture_evidence(driver, "TC007", "02_scratch_card_after_dismissal")
+    if not _tc007_is_top_up_screen(driver):
+        raise AssertionError(
+            "Invalid voucher dialog was dismissed, but the Top Up screen is "
+            "not available for the digital-payment flow. "
+            f"Application message: {error_message}"
+        )
+    return error_message
+
+
+def _tc007_other_digital_payment_flow(driver):
+    if not _tc007_is_top_up_screen(driver):
+        raise AssertionError(
+            "Other Digital Payments cannot be selected because the Top Up "
+            "screen is not displayed."
+        )
+
+    _tc007_click_text(driver, "Other Digital Payments")
+    try:
+        WebDriverWait(driver, 10).until(
+            lambda current_driver: _tc007_label_is_selected(
+                current_driver,
+                "Other Digital Payments",
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "03_other_digital_payments_failed")
+        raise AssertionError(
+            "Other Digital Payments selection could not be verified."
+        ) from error
+    _capture_evidence(driver, "TC007", "03_other_digital_payments")
+
+    kbz_bounds = WebDriverWait(driver, 15).until(_tc007_kbzpay_tile_bounds)
+    _tc007_click_bounds(driver, kbz_bounds)
+    try:
+        WebDriverWait(driver, 10).until(
+            lambda current_driver: _tc007_bounds_are_selected(
+                current_driver,
+                kbz_bounds,
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "04_kbzpay_selection_failed")
+        raise AssertionError(
+            "KBZPay selection could not be verified from the hierarchy."
+        ) from error
+    _capture_evidence(driver, "TC007", "04_kbzpay_selected")
+
+    _tc007_click_text(driver, "1,000")
+    try:
+        WebDriverWait(driver, 10).until(
+            lambda current_driver: _tc007_label_is_selected(current_driver, "1,000")
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "05_amount_selection_failed")
+        raise AssertionError(
+            "The 1,000 amount selection could not be verified."
+        ) from error
+    _capture_evidence(driver, "TC007", "05_amount_selected")
+
+    _tc007_click_text(driver, "Top Up")
+    try:
+        WebDriverWait(driver, 30).until(
+            lambda current_driver: _tc007_has_text(current_driver, "Confirm")
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC007", "06_confirmation_not_displayed")
+        raise AssertionError(
+            "Confirmation dialog was not displayed after submitting KBZPay."
+        ) from error
+
+    _capture_evidence(driver, "TC007", "06_confirmation_dialog")
+    before_confirm = driver.page_source
+    try:
+        _tc007_click_text(driver, "Confirm")
+        WebDriverWait(driver, 30).until(
+            lambda current_driver: (
+                current_driver.page_source != before_confirm
+                and not _tc007_has_text(current_driver, "Confirm")
+            )
+        )
+    except Exception as error:
+        _capture_evidence(driver, "TC007", "07_confirmation_action_failed")
+        raise AssertionError("Confirmation action did not complete.") from error
+
+    _capture_evidence(driver, "TC007", "07_confirmation_result")
+    raise AssertionError(
+        "Final success state not verified: the available runtime hierarchy "
+        "does not identify a transaction-success landmark. Review TC007_07 "
+        "confirmation-result evidence before adding a success assertion."
+    )
+
+
+def _tc007_edit_fields(driver):
+    return sorted(
+        (
+            field
+            for field in driver.find_elements(
+                AppiumBy.CLASS_NAME,
+                "android.widget.EditText",
+            )
+            if field.is_displayed() and field.is_enabled()
+        ),
+        key=lambda field: field.location["y"],
+    )
+
+
+def _tc007_is_top_up_screen(driver):
+    top_up_content_visible = (
+        _tc007_has_text(driver, "Enter or select ATOM phone number")
+        or _tc007_has_text(driver, "Other Digital Payments")
+        or (
+            MOBILE_NUMBER
+            and _tc007_has_text(driver, f"Top Up for {MOBILE_NUMBER}")
+        )
+    )
+    return (
+        driver.current_package == ATOM_APP_PACKAGE
+        and _tc007_has_text(driver, "Top Up")
+        and top_up_content_visible
+    )
+
+
+def _tc007_has_text(driver, label):
+    root = ElementTree.fromstring(driver.page_source)
+    target = label.strip().casefold()
+    return any(
+        node.get("displayed", "true").lower() == "true"
+        and (
+            (node.get("text") or "").strip().casefold() == target
+            or (node.get("content-desc") or "").strip().casefold() == target
+        )
+        for node in root.iter()
+    )
+
+
+def _tc007_find_text_element(driver, label):
+    elements = driver.find_elements(
+        AppiumBy.ANDROID_UIAUTOMATOR,
+        f'new UiSelector().textMatches("(?i)^{re.escape(label)}$")',
+    )
+    return next(
+        (element for element in elements if element.is_displayed()),
+        None,
+    )
+
+
+def _tc007_click_text(driver, text):
+    wait = WebDriverWait(driver, 20)
+
+    if text == "Other Digital Payments":
+        # Locate the clickable parent containing the text
+        parent = wait.until(
+            EC.presence_of_element_located(
+                (
+                    AppiumBy.XPATH,
+                    "//*[contains(@text, 'Other Digital Payments')]/.."
+                )
+            )
+        )
+
+        # Radio button is on the LEFT side of the text.
+        rect = parent.rect
+
+        radio_x = rect["x"] + 40
+        radio_y = rect["y"] + rect["height"] // 2
+
+        # Click radio button position
+        driver.execute_script(
+            "mobile: clickGesture",
+            {
+                "x": radio_x,
+                "y": radio_y
+            }
+        )
+
+        time.sleep(2)
+
+        print("Clicked Other Digital Payments radio button.")
+
+        return
+
+    # Existing handling for other text elements
+    element = wait.until(
+        EC.presence_of_element_located(
+            (
+                AppiumBy.XPATH,
+                f"//*[@text='{text}']"
+            )
+        )
+    )
+
+    element.click()
+
+
+# def _tc007_click_text(driver, text):
+#     wait = WebDriverWait(driver, 20)
+
+#     if text.strip().casefold() == "top up":
+#         return _tc007_click_top_up_submit(driver)
+
+#     if text == "Other Digital Payments":
+#         # Find the text element
+#         text_element = wait.until(
+#             EC.presence_of_element_located(
+#                 (AppiumBy.XPATH,
+#                  "//*[contains(@text, 'Other Digital Payments')]")
+#             )
+#         )
+
+#         # Get its clickable parent View
+#         parent = text_element.find_element(
+#             AppiumBy.XPATH, ".."
+#         )
+
+#         # Click the parent instead of the TextView
+#         driver.execute_script(
+#             "mobile: clickGesture",
+#             {
+#                 "x": parent.rect["x"] + parent.rect["width"] // 2,
+#                 "y": parent.rect["y"] + parent.rect["height"] // 2
+#             }
+#         )
+
+#         time.sleep(2)
+#         print("PASS: Other Digital Payments selected.")
+#         return
+
+#     # Existing handling for other text elements
+#     bounds = wait.until(
+#         lambda d: d.find_element(
+#             AppiumBy.XPATH,
+#             f"//*[@text='{text}']"
+#         ).rect
+#     )
+
+#     driver.execute_script(
+#         "mobile: clickGesture",
+#         {
+#             "x": bounds["x"] + bounds["width"] // 2,
+#             "y": bounds["y"] + bounds["height"] // 2
+#         }
+#     )
+
+
+def _tc007_click_top_up_submit(driver):
+    button_label = f"Top Up for {MOBILE_NUMBER}"
+    scroll_more = True
+    for _ in range(10):
+        clickable_parent = _tc007_find_clickable_parent(driver, button_label)
+        if clickable_parent is not None:
+            if not clickable_parent.is_displayed() or not clickable_parent.is_enabled():
+                raise AssertionError(
+                    "The visible Top Up submit control is not enabled."
+                )
+            _capture_evidence(driver, "TC007", "02_scratch_submit_visible")
+            source_before_click = driver.page_source
+            clickable_parent.click()
+            return source_before_click
+
+        bounds = _tc007_clickable_bounds_for_label(
+            driver.page_source,
+            button_label,
+        )
+        if bounds:
+            _capture_evidence(driver, "TC007", "02_scratch_submit_visible")
+            source_before_click = driver.page_source
+            _tc007_click_bounds(driver, bounds)
+            return source_before_click
+
+        if not scroll_more:
+            break
+        scroll_more = _tc007_scroll_top_up_form(driver)
+
+    clickable_target = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _tc007_find_clickable_parent(current_driver, button_label)
+            or _tc007_clickable_bounds_for_label(
+                current_driver.page_source,
+                button_label,
+            )
+            or False
+        )
+    )
+    source_before_click = driver.page_source
+    if isinstance(clickable_target, tuple):
+        _capture_evidence(driver, "TC007", "02_scratch_submit_visible")
+        _tc007_click_bounds(driver, clickable_target)
+    else:
+        if not clickable_target.is_displayed() or not clickable_target.is_enabled():
+            raise AssertionError(
+                "The visible Top Up submit control is not enabled."
+            )
+        _capture_evidence(driver, "TC007", "02_scratch_submit_visible")
+        clickable_target.click()
+    return source_before_click
+
+
+def _tc007_scroll_top_up_form(driver):
+    scroll_views = driver.find_elements(
+        AppiumBy.CLASS_NAME,
+        "android.widget.ScrollView",
+    )
+    scroll_view = next(
+        (
+            element
+            for element in scroll_views
+            if element.is_displayed()
+            and element.is_enabled()
+            and element.get_attribute("scrollable") == "true"
+        ),
+        None,
+    )
+    if scroll_view is None:
+        return False
+
+    return bool(
+        driver.execute_script(
+            "mobile: scrollGesture",
+            {
+                "elementId": scroll_view.id,
+                "direction": "down",
+                "percent": 0.65,
+            },
+        )
+    )
+
+
+def _tc007_find_accessible_clickable_parent(driver, accessibility_id):
+    elements = driver.find_elements(
+        AppiumBy.ACCESSIBILITY_ID,
+        accessibility_id,
+    )
+    for element in elements:
+        if not element.is_displayed():
+            continue
+        for depth in range(1, 6):
+            xpath = "/".join([".."] * depth)
+            try:
+                ancestor = element.find_element(AppiumBy.XPATH, xpath)
+            except Exception:
+                break
+            if (
+                ancestor.is_displayed()
+                and ancestor.is_enabled()
+                and ancestor.get_attribute("clickable") == "true"
+            ):
+                return ancestor
+    return None
+
+
+def _tc007_return_home_after_submit_failure(driver):
+    back_control = WebDriverWait(driver, 10).until(
+        lambda current_driver: (
+            _tc007_find_accessible_clickable_parent(current_driver, "Back")
+            or False
+        )
+    )
+    back_control.click()
+    WebDriverWait(driver, 30).until(_is_store_home_screen)
+    _capture_evidence(driver, "TC007", "02_home_recovery_after_submit_failure")
+
+
+def _tc007_click_text(driver, label):
+    for _ in range(4):
+        clickable_parent = _tc007_find_clickable_parent(driver, label)
+        if clickable_parent is not None:
+            clickable_parent.click()
+            return
+
+        bounds = _tc007_clickable_bounds_for_label(driver.page_source, label)
+        if bounds:
+            _tc007_click_bounds(driver, bounds)
+            return
+        scroll_bounds = _tc007_scrollable_bounds(driver.page_source)
+        if scroll_bounds is None:
+            break
+        _tc007_scroll(driver, scroll_bounds)
+
+    bounds = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _tc007_find_clickable_parent(current_driver, label)
+            or _tc007_clickable_bounds_for_label(
+                current_driver.page_source,
+                label,
+            )
+            or False
+        )
+    )
+    if isinstance(bounds, tuple):
+        _tc007_click_bounds(driver, bounds)
+    else:
+        bounds.click()
+
+
+def _tc007_find_clickable_parent(driver, label):
+    text_elements = driver.find_elements(
+        AppiumBy.ANDROID_UIAUTOMATOR,
+        f'new UiSelector().textMatches("(?i)^{re.escape(label)}$")',
+    )
+    for text_element in text_elements:
+        if not text_element.is_displayed():
+            continue
+        for depth in range(1, 6):
+            xpath = "/".join([".."] * depth)
+            try:
+                ancestor = text_element.find_element(AppiumBy.XPATH, xpath)
+            except Exception:
+                break
+            if (
+                ancestor.is_displayed()
+                and ancestor.is_enabled()
+                and ancestor.get_attribute("clickable") == "true"
+            ):
+                return ancestor
+    return None
+
+
+def _tc007_clickable_bounds_for_label(source, label):
+    root = ElementTree.fromstring(source)
+    parents = {child: parent for parent in root.iter() for child in parent}
+    target = label.strip().casefold()
+    for node in root.iter():
+        if not (
+            (node.get("text") or "").strip().casefold() == target
+            or (node.get("content-desc") or "").strip().casefold() == target
+        ):
+            continue
+        ancestor = node
+        while ancestor is not None:
+            if (
+                ancestor.get("clickable", "").lower() == "true"
+                and ancestor.get("enabled", "true").lower() == "true"
+                and ancestor.get("displayed", "true").lower() == "true"
+            ):
+                return _tc007_parse_bounds(ancestor.get("bounds", ""))
+            ancestor = parents.get(ancestor)
+    return None
+
+
+def _tc007_parse_bounds(bounds):
+    match = re.fullmatch(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", bounds)
+    return tuple(map(int, match.groups())) if match else None
+
+
+def _tc007_click_bounds(driver, bounds):
+    root = ElementTree.fromstring(driver.page_source)
+    source_width = int(root.attrib.get("width", "0"))
+    source_height = int(root.attrib.get("height", "0"))
+    window = driver.get_window_size()
+    left, top, right, bottom = bounds
+    driver.execute_script(
+        "mobile: clickGesture",
+        {
+            "x": round((left + right) / 2 * window["width"] / source_width),
+            "y": round((top + bottom) / 2 * window["height"] / source_height),
+        },
+    )
+
+
+def _tc007_scroll(driver, bounds):
+    root = ElementTree.fromstring(driver.page_source)
+    source_width = int(root.attrib.get("width", "0"))
+    source_height = int(root.attrib.get("height", "0"))
+    window = driver.get_window_size()
+    left, top, right, bottom = bounds
+    driver.execute_script(
+        "mobile: scrollGesture",
+        {
+            "left": round(left * window["width"] / source_width),
+            "top": round(top * window["height"] / source_height),
+            "width": round((right - left) * window["width"] / source_width),
+            "height": round((bottom - top) * window["height"] / source_height),
+            "direction": "down",
+            "percent": 0.65,
+        },
+    )
+
+
+def _tc007_scrollable_bounds(source):
+    root = ElementTree.fromstring(source)
+    return next(
+        (
+            _tc007_parse_bounds(node.get("bounds", ""))
+            for node in root.iter()
+            if node.get("scrollable", "").lower() == "true"
+            and node.get("displayed", "true").lower() == "true"
+            and _tc007_parse_bounds(node.get("bounds", ""))
+        ),
+        None,
+    )
+
+
+def _tc007_kbzpay_tile_bounds(driver):
+    source = driver.page_source
+    other_bounds = _tc007_clickable_bounds_for_label(
+        source,
+        "Other Digital Payments",
+    )
+    if other_bounds is None:
+        return False
+    root = ElementTree.fromstring(source)
+    tiles = []
+    for node in root.iter():
+        bounds = _tc007_parse_bounds(node.get("bounds", ""))
+        if not (
+            bounds
+            and node.get("class") == "android.view.View"
+            and node.get("clickable", "").lower() == "true"
+            and node.get("enabled", "true").lower() == "true"
+            and node.get("displayed", "true").lower() == "true"
+        ):
+            continue
+        left, top, right, bottom = bounds
+        width, height = right - left, bottom - top
+        if top >= other_bounds[3] and width >= 150 and height >= 150:
+            if 0.8 <= width / height <= 1.2:
+                tiles.append((top, left, bounds))
+    tiles.sort()
+    return tiles[1][2] if len(tiles) >= 2 else False
+
+
+def _tc007_bounds_are_selected(driver, bounds):
+    root = ElementTree.fromstring(driver.page_source)
+    return any(
+        _tc007_parse_bounds(node.get("bounds", "")) == bounds
+        and (
+            node.get("selected", "").lower() == "true"
+            or node.get("checked", "").lower() == "true"
+        )
+        for node in root.iter()
+    )
+
+
+def _tc007_label_is_selected(driver, label):
+    root = ElementTree.fromstring(driver.page_source)
+    parents = {child: parent for parent in root.iter() for child in parent}
+    target = label.strip().casefold()
+    for node in root.iter():
+        if not (
+            (node.get("text") or "").strip().casefold() == target
+            or (node.get("content-desc") or "").strip().casefold() == target
+        ):
+            continue
+        ancestor = node
+        while ancestor is not None:
+            if (
+                ancestor.get("selected", "").lower() == "true"
+                or ancestor.get("checked", "").lower() == "true"
+            ):
+                return True
+            ancestor = parents.get(ancestor)
+    return False
+
+
+def _tc007_dialog_message(source):
+    root = ElementTree.fromstring(source)
+    parts = []
+    for node in root.iter():
+        value = (node.get("text") or "").strip()
+        if value and value.casefold() != "okay" and value not in parts:
+            parts.append(value)
+    return " ".join(parts) or "Invalid voucher dialog displayed."
 
     wait = WebDriverWait(driver, 30)
     wait.until(
@@ -1350,180 +2003,7 @@ def _restart_to_welcome_screen(driver):
     )
 
 
-# def _tc008_select_burmese_language(driver):
-#     _restart_to_welcome_screen(driver)
-#     _select_language(driver, "rdUnicode", "tc008_burmese")
 
-
-# def _tc009_open_login_screen(driver):
-#     _open_login_screen(driver, "tc009_login_screen")
-
-
-# def _tc010_enter_mobile_number(driver, capsys):
-#     _enter_mobile_number(
-#         driver,
-#         capsys,
-#         "TC010",
-#         "atom_store_tc010",
-#     )
-
-
-# def _tc011_verify_store_home_screen(driver):
-#     _verify_store_home_screen(
-#         driver,
-#         "TC011",
-#         "atom_store_tc011",
-#     )
-#     time.sleep(15)  # Allow time for the home screen to stabilize before proceeding to the next test case.
-
-# def _tc012_select_chinese_language(driver):
-#     _restart_to_welcome_screen(driver)
-#     _select_language(driver, "rdChinese", "tc012_chinese")
-
-
-# def _tc013_open_login_screen(driver):
-#     _open_login_screen(driver, "tc013_login_screen")
-
-
-# def _tc014_enter_mobile_number(driver, capsys):
-#     _enter_mobile_number(
-#         driver,
-#         capsys,
-#         "TC014",
-#         "atom_store_tc014",
-#     )
-
-
-# def _tc015_verify_store_home_screen(driver):
-#     _verify_store_home_screen(
-#         driver,
-#         "TC015",
-#         "atom_store_tc015",
-#     )
-#     time.sleep(15)  # Allow time for the home screen to stabilize before proceeding to the next test case.
-
-
-# def _tc016_reject_empty_mobile_number(driver):
-#     _restart_to_welcome_screen(driver)
-#     _select_language(driver, "rdEnglish", "tc016_english")
-#     _open_login_screen(driver, "tc016_login_screen")
-#     _reject_mobile_number(driver, "", "TC016")
-
-
-# def _tc017_reject_invalid_mobile_number(driver):
-#     _reject_mobile_number(driver, "0000000000", "TC017")
-
-
-# def _tc018_reject_empty_burmese_mobile_number(driver):
-#     _start_negative_mobile_flow(
-#         driver,
-#         "rdUnicode",
-#         "TC018",
-#         "Burmese",
-#     )
-#     _reject_mobile_number(driver, "", "TC018")
-
-
-# def _tc019_reject_invalid_burmese_mobile_number(driver):
-#     _reject_mobile_number(driver, "0000000000", "TC019")
-
-
-# def _tc020_reject_empty_chinese_mobile_number(driver):
-#     _start_negative_mobile_flow(
-#         driver,
-#         "rdChinese",
-#         "TC020",
-#         "Chinese",
-#     )
-#     _reject_mobile_number(driver, "", "TC020")
-
-
-# def _tc021_reject_invalid_chinese_mobile_number(driver):
-#     _reject_mobile_number(driver, "0000000000", "TC021")
-
-
-# def _tc022_reject_overlong_english_mobile_number(driver):
-#     _start_negative_mobile_flow(driver, "rdEnglish", "TC022", "English")
-#     _reject_mobile_number(
-#         driver,
-#         "0123456789012345",
-#         "TC022",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc023_reject_special_characters_english(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "@#$%&*",
-#         "TC023",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc024_reject_alphabetic_english_mobile_number(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "abcdefgh",
-#         "TC024",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc025_reject_overlong_burmese_mobile_number(driver):
-#     _start_negative_mobile_flow(driver, "rdUnicode", "TC025", "Burmese")
-#     _reject_mobile_number(
-#         driver,
-#         "0123456789012345",
-#         "TC025",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc026_reject_special_characters_burmese(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "@#$%&*",
-#         "TC026",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc027_reject_alphabetic_burmese_mobile_number(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "abcdefgh",
-#         "TC027",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc028_reject_overlong_chinese_mobile_number(driver):
-#     _start_negative_mobile_flow(driver, "rdChinese", "TC028", "Chinese")
-#     _reject_mobile_number(
-#         driver,
-#         "0123456789012345",
-#         "TC028",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc029_reject_special_characters_chinese(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "@#$%&*",
-#         "TC029",
-#         check_retained_value=False,
-#     )
-
-
-# def _tc030_reject_alphabetic_chinese_mobile_number(driver):
-#     _reject_mobile_number(
-#         driver,
-#         "abcdefgh",
-#         "TC030",
-#         check_retained_value=False,
-#     )
 
 
 def _start_negative_mobile_flow(driver, language_id, testcase, language):
@@ -1594,61 +2074,3 @@ def _reject_mobile_number(
     )
 
 
-# def _tc007_open_popular_window(driver):
-#     print("\n--- TC007: Open Popular window ---")
-
-#     screen = driver.get_window_size()
-#     popular_x = round(screen["width"] * 0.62)
-#     popular_y = round(screen["height"] * 0.095)
-
-#     # The home screen shows a five-step onboarding overlay. Taps are intercepted
-#     # by that overlay until its five pages have been advanced.
-#     for _ in range(5):
-#         driver.execute_script(
-#             "mobile: clickGesture",
-#             {"x": popular_x, "y": popular_y},
-#         )
-#         time.sleep(0.5)
-
-#     before_source = driver.page_source
-#     before_screenshot = driver.get_screenshot_as_png()
-
-#     popular_items = driver.find_elements(
-#         AppiumBy.ANDROID_UIAUTOMATOR,
-#         'new UiSelector().text("Popular")',
-#     )
-#     popular_button = next(
-#         (
-#             item
-#             for item in popular_items
-#             if item.is_displayed() and item.is_enabled()
-#         ),
-#         None,
-#     )
-
-#     if popular_button:
-#         popular_button.click()
-#     else:
-#         driver.execute_script(
-#             "mobile: clickGesture",
-#             {"x": popular_x, "y": popular_y},
-#         )
-
-#     time.sleep(3)
-#     after_source = driver.page_source
-#     # print("POPULAR SCREEN UI HIERARCHY:")
-#     # print(after_source)
-#     after_screenshot = driver.get_screenshot_as_png()
-#     _save_screenshot(driver, "atom_store_tc007_popular.png")
-
-#     assert after_source != before_source or after_screenshot != before_screenshot, (
-#         "TC007 FAIL: The screen did not change after tapping the Popular "
-#         "chip in the top-right offers row."
-#     )
-
-#     print(
-#         "PASS: Tapped the Popular chip in the top-right offers row and "
-#         "the displayed screen changed. "
-#         "Review reports/screenshots/atom_store_tc007_popular.png "
-#         "to confirm the Popular window."
-#     )

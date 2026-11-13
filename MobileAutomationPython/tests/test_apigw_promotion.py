@@ -22,6 +22,62 @@ class _FakeElement:
             self._on_click()
 
 
+class _FakeTextWithParent:
+    def __init__(self, parent):
+        self.parent = parent
+
+    def is_displayed(self):
+        return True
+
+    def find_element(self, by, xpath):
+        assert by == AppiumBy.XPATH
+        current = self
+        for _ in xpath.split("/"):
+            current = current.parent
+            if current is None:
+                raise LookupError("No parent element")
+        return current
+
+
+class _FakeClickableParent:
+    def __init__(self, clickable, enabled=True):
+        self.clickable = clickable
+        self.enabled = enabled
+        self.clicked = False
+        self.parent = None
+
+    def is_displayed(self):
+        return True
+
+    def is_enabled(self):
+        return self.enabled
+
+    def get_attribute(self, name):
+        return "true" if name == "clickable" and self.clickable else "false"
+
+    def click(self):
+        self.clicked = True
+
+
+class _FakeTopUpLocatorDriver:
+    def __init__(self, text_elements):
+        self.text_elements = text_elements
+        self.page_source = "<hierarchy />"
+
+    def find_elements(self, by, value):
+        assert by == AppiumBy.ANDROID_UIAUTOMATOR
+        return self.text_elements
+
+
+class _FakeBackLocatorDriver:
+    def __init__(self, back_element):
+        self.back_element = back_element
+
+    def find_elements(self, by, value):
+        assert by == AppiumBy.ACCESSIBILITY_ID
+        return [self.back_element] if value == "Back" else []
+
+
 class _FakeDriver:
     current_package = apigw.ATOM_APP_PACKAGE
 
@@ -489,6 +545,7 @@ def test_writes_before_and_after_hierarchies_to_one_xml_file(
     tmp_path, monkeypatch
 ):
     monkeypatch.setattr(apigw, "UI_DUMP_DIR", tmp_path)
+    monkeypatch.setattr(apigw, "EXECUTION_ID", "20261112_114750")
     before = '<hierarchy><node class="ImageView" /></hierarchy>'
     after = '<hierarchy><node text="Popular" /></hierarchy>'
 
@@ -497,10 +554,104 @@ def test_writes_before_and_after_hierarchies_to_one_xml_file(
     )
 
     root = ElementTree.parse(path).getroot()
-    assert path.name == "atom_store_tc006.xml"
+    assert path.name == "atom_store_tc006_home_screen_20261112_114750.xml"
     assert [snapshot.get("stage") for snapshot in root] == [
         "before_dismissal",
         "home_screen",
     ]
     assert root.find(".//node[@class='ImageView']") is not None
     assert root.find(".//node[@text='Popular']") is not None
+
+
+def test_evidence_capture_uses_shared_id_and_never_overwrites(
+    tmp_path, monkeypatch
+):
+    screenshots = tmp_path / "screenshots"
+    ui_dumps = tmp_path / "ui_dumps"
+    monkeypatch.setattr(apigw, "SCREENSHOT_DIR", screenshots)
+    monkeypatch.setattr(apigw, "UI_DUMP_DIR", ui_dumps)
+    monkeypatch.setattr(apigw, "EXECUTION_ID", "20261112_114750")
+    driver = _FakeDriver('<hierarchy><node text="Top Up" /></hierarchy>')
+
+    first_png, first_xml = apigw._capture_evidence(
+        driver,
+        "TC007",
+        "03_other_digital_payments",
+    )
+    driver.visual_frame += 1
+    second_png, second_xml = apigw._capture_evidence(
+        driver,
+        "TC007",
+        "03_other_digital_payments",
+    )
+
+    assert first_png.name == (
+        "atom_store_tc007_03_other_digital_payments_20261112_114750.png"
+    )
+    assert first_xml.name == first_png.with_suffix(".xml").name
+    assert second_png.name.endswith("20261112_114750_1.png")
+    assert second_xml.name.endswith("20261112_114750_1.xml")
+    assert first_png.read_bytes() == b"screen-frame-0"
+    assert second_png.read_bytes() == b"screen-frame-1"
+    assert "Top Up" in first_xml.read_text(encoding="utf-8")
+
+
+def test_other_digital_payments_uses_observed_clickable_parent_bounds():
+    source = (
+        '<hierarchy width="1080" height="2340">'
+        '<node class="android.view.View" clickable="true" enabled="true" '
+        'displayed="true" bounds="[45,1417][515,1552]">'
+        '<node class="android.widget.TextView" text="Other Digital Payments" '
+        'clickable="false" bounds="[102,1457][515,1512]" />'
+        '</node></hierarchy>'
+    )
+
+    assert apigw._tc007_clickable_bounds_for_label(
+        source,
+        "Other Digital Payments",
+    ) == (45, 1417, 515, 1552)
+
+
+def test_kbzpay_tile_is_second_tile_in_observed_first_icon_row():
+    source = (
+        '<hierarchy width="1080" height="2340">'
+        '<node class="android.view.View" clickable="true" enabled="true" '
+        'displayed="true" bounds="[45,1417][515,1552]">'
+        '<node class="android.widget.TextView" text="Other Digital Payments" '
+        'clickable="false" bounds="[102,1457][515,1512]" />'
+        '</node>'
+        '<node class="android.view.View" clickable="true" enabled="true" '
+        'displayed="true" bounds="[45,1571][254,1780]" />'
+        '<node class="android.view.View" clickable="true" enabled="true" '
+        'displayed="true" bounds="[299,1571][508,1780]" />'
+        '</hierarchy>'
+    )
+    driver = _FakeDriver(source)
+
+    assert apigw._tc007_kbzpay_tile_bounds(driver) == (299, 1571, 508, 1780)
+
+
+def test_top_up_text_clicks_enabled_clickable_parent_and_skips_header():
+    header_parent = _FakeClickableParent(clickable=False)
+    disabled_parent = _FakeClickableParent(clickable=True, enabled=False)
+    submit_parent = _FakeClickableParent(clickable=True, enabled=True)
+    header = _FakeTextWithParent(header_parent)
+    disabled_submit = _FakeTextWithParent(disabled_parent)
+    submit = _FakeTextWithParent(submit_parent)
+    driver = _FakeTopUpLocatorDriver([header, disabled_submit, submit])
+
+    apigw._tc007_click_text(driver, "Top Up")
+
+    assert not header_parent.clicked
+    assert not disabled_parent.clicked
+    assert submit_parent.clicked
+
+
+def test_back_accessibility_control_resolves_clickable_parent():
+    back_parent = _FakeClickableParent(clickable=True, enabled=True)
+    back_element = _FakeTextWithParent(back_parent)
+    driver = _FakeBackLocatorDriver(back_element)
+
+    parent = apigw._tc007_find_accessible_clickable_parent(driver, "Back")
+
+    assert parent is back_parent

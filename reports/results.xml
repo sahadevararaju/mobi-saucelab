@@ -1,5 +1,128 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="299.109" timestamp="2026-11-12T13:55:04.647937+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="298.842"><failure message="AssertionError: The scratch card number was not entered correctly.">atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="bcc76126-a5d0-4d05-b711-582e6e5f4d29")&gt;
-capsys = &lt;_pytest.capture.CaptureFixture object at 0x0000026D5589F8C0&gt;
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="365.969" timestamp="2026-11-13T09:58:36.613158+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="365.626"><failure message="AssertionError: TC007 failed; later cases were still executed: Other Digital Payments selection could not be verified. Scratch-card application response: Sorry! Invalid Voucher Number">driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+
+    def _tc007_other_digital_payment_flow(driver):
+        if not _tc007_is_top_up_screen(driver):
+            raise AssertionError(
+                "Other Digital Payments cannot be selected because the Top Up "
+                "screen is not displayed."
+            )
+    
+        _tc007_click_text(driver, "Other Digital Payments")
+        try:
+&gt;           WebDriverWait(driver, 10).until(
+                lambda current_driver: _tc007_label_is_selected(
+                    current_driver,
+                    "Other Digital Payments",
+                )
+            )
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:813: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+method = &lt;function _tc007_other_digital_payment_flow.&lt;locals&gt;.&lt;lambda&gt; at 0x0000022D9842DBC0&gt;
+message = ''
+
+    def until(self, method: Callable[[D], Literal[False] | T], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Args:
+            method: A callable object that takes a WebDriver instance as an
+                argument.
+            message: Optional message for TimeoutException.
+    
+        Returns:
+            The result of the last call to `method`.
+    
+        Raises:
+            TimeoutException: If 'method' does not return a truthy value within
+                the WebDriverWait object's timeout.
+    
+        Example:
+            &gt;&gt;&gt; from selenium.webdriver.common.by import By
+            &gt;&gt;&gt; from selenium.webdriver.support.wait import WebDriverWait
+            &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+            &gt;&gt;&gt;
+            &gt;&gt;&gt; # Wait until an element is visible on the page
+            &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+            &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+            &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message:
+
+C:\ATOM_Automation\.venv\Lib\site-packages\selenium\webdriver\support\wait.py:121: TimeoutException
+
+The above exception was the direct cause of the following exception:
+
+driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+
+    def _tc007_click_top_up_icon(driver):
+        if not _is_store_home_screen(driver):
+            raise AssertionError(
+                "TC007 requires the authenticated ATOM Store home screen."
+            )
+    
+        driver.execute_script(
+            "mobile: clickGesture",
+            {"x": 168, "y": 644},
+        )
+        WebDriverWait(driver, 30).until(_tc007_is_top_up_screen)
+        scratch_card_response = _tc007_scratch_card_flow(driver)
+        try:
+&gt;           _tc007_other_digital_payment_flow(driver)
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:697: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+
+    def _tc007_other_digital_payment_flow(driver):
+        if not _tc007_is_top_up_screen(driver):
+            raise AssertionError(
+                "Other Digital Payments cannot be selected because the Top Up "
+                "screen is not displayed."
+            )
+    
+        _tc007_click_text(driver, "Other Digital Payments")
+        try:
+            WebDriverWait(driver, 10).until(
+                lambda current_driver: _tc007_label_is_selected(
+                    current_driver,
+                    "Other Digital Payments",
+                )
+            )
+        except TimeoutException as error:
+            _capture_evidence(driver, "TC007", "03_other_digital_payments_failed")
+&gt;           raise AssertionError(
+                "Other Digital Payments selection could not be verified."
+            ) from error
+E           AssertionError: Other Digital Payments selection could not be verified.
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:821: AssertionError
+
+The above exception was the direct cause of the following exception:
+
+atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x0000022D991AF8C0&gt;
 request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;&gt;
 
     @pytest.mark.sauce
@@ -13,96 +136,34 @@ request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;
             ("TC005", _tc005_enter_mobile_number, atom_store_driver, capsys),
             ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
             ("TC007", _tc007_click_top_up_icon, atom_store_driver),
-            # ("TC008", _tc008_select_burmese_language, atom_store_driver),
-            # ("TC009", _tc009_open_login_screen, atom_store_driver),
-            # ("TC010", _tc010_enter_mobile_number, atom_store_driver, capsys),
-            # ("TC011", _tc011_verify_store_home_screen, atom_store_driver),
-            # ("TC012", _tc012_select_chinese_language, atom_store_driver),
-            # ("TC013", _tc013_open_login_screen, atom_store_driver),
-            # ("TC014", _tc014_enter_mobile_number, atom_store_driver, capsys),
-            # ("TC015", _tc015_verify_store_home_screen, atom_store_driver),
-            # ("TC016", _tc016_reject_empty_mobile_number, atom_store_driver),
-            # ("TC017", _tc017_reject_invalid_mobile_number, atom_store_driver),
-            # (
-            #     "TC018",
-            #     _tc018_reject_empty_burmese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC019",
-            #     _tc019_reject_invalid_burmese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC020",
-            #     _tc020_reject_empty_chinese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC021",
-            #     _tc021_reject_invalid_chinese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC022",
-            #     _tc022_reject_overlong_english_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC023",
-            #     _tc023_reject_special_characters_english,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC024",
-            #     _tc024_reject_alphabetic_english_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC025",
-            #     _tc025_reject_overlong_burmese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC026",
-            #     _tc026_reject_special_characters_burmese,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC027",
-            #     _tc027_reject_alphabetic_burmese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC028",
-            #     _tc028_reject_overlong_chinese_mobile_number,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC029",
-            #     _tc029_reject_special_characters_chinese,
-            #     atom_store_driver,
-            # ),
-            # (
-            #     "TC030",
-            #     _tc030_reject_alphabetic_chinese_mobile_number,
-            #     atom_store_driver,
-            # ),
+            ("TC008", _tc008_click_packs_icon, atom_store_driver),
+            ("TC009", _tc009_click_kyikwar, atom_store_driver),
+            ("TC010", _tc010_click_all_in_one, atom_store_driver),
+            ("TC011", _tc011_click_tiktok, atom_store_driver),
+            ("TC012", _tc012_click_youtube, atom_store_driver),
+            ("TC013", _tc013_click_telegram, atom_store_driver),
+            ("TC014", _tc014_click_megapack, atom_store_driver),
+            ("TC015", _tc015_click_super_htaw, atom_store_driver),
         ]
+        tc007_error = None
         for testcase in testcases:
-&gt;           _run_testcase(request.node, testcase[0], testcase[1], *testcase[2:])
+            try:
+&gt;               _run_testcase(
+                    request.node,
+                    testcase[0],
+                    testcase[1],
+                    *testcase[2:],
+                )
 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:404: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:221: in _run_testcase
+MobileAutomationPython\tests\test_native_androidAPIGW.py:250: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+MobileAutomationPython\tests\test_native_androidAPIGW.py:132: in _run_testcase
     test_function(*args)
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
-driver = &lt;appium.webdriver.webdriver.WebDriver (session="bcc76126-a5d0-4d05-b711-582e6e5f4d29")&gt;
+driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
 
     def _tc007_click_top_up_icon(driver):
-        scratch_card_number = "36885710672098262"
-    
         if not _is_store_home_screen(driver):
             raise AssertionError(
                 "TC007 requires the authenticated ATOM Store home screen."
@@ -112,54 +173,64 @@ driver = &lt;appium.webdriver.webdriver.WebDriver (session="bcc76126-a5d0-4d05-b
             "mobile: clickGesture",
             {"x": 168, "y": 644},
         )
-    
-        wait = WebDriverWait(driver, 30)
-        wait.until(
-            EC.visibility_of_element_located(
-                (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Top Up")')
-            )
-        )
-        _capture_evidence(driver, "TC007", "top_up")
-    
-        edit_fields = wait.until(
-            lambda current_driver: sorted(
-                (
-                    field
-                    for field in current_driver.find_elements(
-                        AppiumBy.CLASS_NAME,
-                        "android.widget.EditText",
-                    )
-                    if field.is_displayed() and field.is_enabled()
-                ),
-                key=lambda field: field.location["y"],
-            )
-            if len(
-                [
-                    field
-                    for field in current_driver.find_elements(
-                        AppiumBy.CLASS_NAME,
-                        "android.widget.EditText",
-                    )
-                    if field.is_displayed() and field.is_enabled()
-                ]
-            ) &gt;= 2
-            else False
-        )
-        phone_field, scratch_card_field = edit_fields[:2]
-    
-        if not MOBILE_NUMBER:
-            raise AssertionError("MOBILE_NUMBER is not configured in .env.")
-        phone_field.clear()
-        phone_field.send_keys(MOBILE_NUMBER)
-        if phone_field.get_attribute("text") != MOBILE_NUMBER:
-            raise AssertionError(
-                "The configured ATOM phone number was not entered correctly."
-            )
-    
-        scratch_card_field.clear()
-        scratch_card_field.send_keys(scratch_card_number)
-        if scratch_card_field.get_attribute("text") != scratch_card_number:
-&gt;           raise AssertionError("The scratch card number was not entered correctly.")
-E           AssertionError: The scratch card number was not entered correctly.
+        WebDriverWait(driver, 30).until(_tc007_is_top_up_screen)
+        scratch_card_response = _tc007_scratch_card_flow(driver)
+        try:
+            _tc007_other_digital_payment_flow(driver)
+        except Exception as error:
+            if scratch_card_response:
+&gt;               raise AssertionError(
+                    f"{error} Scratch-card application response: "
+                    f"{scratch_card_response}"
+                ) from error
+E               AssertionError: Other Digital Payments selection could not be verified. Scratch-card application response: Sorry! Invalid Voucher Number
 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:751: AssertionError</failure></testcase></testsuite></testsuites>
+MobileAutomationPython\tests\test_native_androidAPIGW.py:700: AssertionError
+
+The above exception was the direct cause of the following exception:
+
+atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="0070d117-8edb-4d77-a044-bde1faa70b60")&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x0000022D991AF8C0&gt;
+request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;&gt;
+
+    @pytest.mark.sauce
+    def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
+        _initialize_test_case_report(request.node)
+        testcases = [
+            ("TC001", _tc001_launch_latest_apk, atom_store_driver),
+            ("TC002", _tc002_verify_welcome_screen, atom_store_driver),
+            ("TC003", _tc003_select_english, atom_store_driver),
+            ("TC004", _tc004_open_login_screen, atom_store_driver),
+            ("TC005", _tc005_enter_mobile_number, atom_store_driver, capsys),
+            ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
+            ("TC007", _tc007_click_top_up_icon, atom_store_driver),
+            ("TC008", _tc008_click_packs_icon, atom_store_driver),
+            ("TC009", _tc009_click_kyikwar, atom_store_driver),
+            ("TC010", _tc010_click_all_in_one, atom_store_driver),
+            ("TC011", _tc011_click_tiktok, atom_store_driver),
+            ("TC012", _tc012_click_youtube, atom_store_driver),
+            ("TC013", _tc013_click_telegram, atom_store_driver),
+            ("TC014", _tc014_click_megapack, atom_store_driver),
+            ("TC015", _tc015_click_super_htaw, atom_store_driver),
+        ]
+        tc007_error = None
+        for testcase in testcases:
+            try:
+                _run_testcase(
+                    request.node,
+                    testcase[0],
+                    testcase[1],
+                    *testcase[2:],
+                )
+            except Exception as error:
+                if testcase[0] != "TC007":
+                    raise
+                tc007_error = error
+    
+        if tc007_error is not None:
+&gt;           raise AssertionError(
+                f"TC007 failed; later cases were still executed: {tc007_error}"
+            ) from tc007_error
+E           AssertionError: TC007 failed; later cases were still executed: Other Digital Payments selection could not be verified. Scratch-card application response: Sorry! Invalid Voucher Number
+
+MobileAutomationPython\tests\test_native_androidAPIGW.py:262: AssertionError</failure></testcase></testsuite></testsuites>
