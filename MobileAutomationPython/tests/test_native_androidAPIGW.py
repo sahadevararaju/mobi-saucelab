@@ -129,6 +129,18 @@ TEST_CASES = {
         "Return to Packages using Back or navigate from Home through Packs, then click Flexiplan.",
         "The Flexiplan option responds to the click.",
     ),
+    "TC017": (
+        "Open Transfer from the Home screen",
+        "Authenticated Home screen; Transfer option",
+        "Return to Home using the Home control or Back, then click Transfer.",
+        "The Transfer destination opens after any Android permission prompt is handled.",
+    ),
+    "TC018": (
+        "Select Point on the Transfer screen",
+        "Transfer screen; Point option",
+        "On the Transfer screen opened by TC017, click Point.",
+        "The Point option responds to the click.",
+    ),
  }
 
 
@@ -250,6 +262,8 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC014", _tc014_click_megapack, atom_store_driver),
         ("TC015", _tc015_click_super_htaw, atom_store_driver),
         ("TC016", _tc016_click_flexiplan, atom_store_driver),
+        ("TC017", _tc017_click_transfer, atom_store_driver),
+        ("TC018", _tc018_click_point, atom_store_driver),
     ]
     tc007_error = None
     for testcase in testcases:
@@ -685,6 +699,105 @@ def _tc016_click_flexiplan(driver):
     _click_package_item(driver, "Flexiplan", "TC016")
 
 
+def _tc017_click_transfer(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _tc007_find_text_element(current_driver, "Transfer") or False
+        )
+    )
+    before_source = driver.page_source
+    _tc007_click_text(driver, "Transfer")
+
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current_driver: (
+                _is_android_runtime_permission_popup_visible(current_driver)
+                or current_driver.page_source != before_source
+            )
+        )
+        permission_was_visible = _is_android_runtime_permission_popup_visible(
+            driver
+        )
+        permission_source = driver.page_source
+        if permission_was_visible:
+            _allow_android_runtime_permission_if_present(driver)
+            WebDriverWait(driver, 30).until(
+                lambda current_driver: (
+                    not _is_android_runtime_permission_popup_visible(
+                        current_driver
+                    )
+                    and current_driver.page_source != permission_source
+                )
+            )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC017", "transfer_open_failed")
+        raise AssertionError(
+            "TC017 clicked Transfer but the destination did not finish "
+            "opening."
+        ) from error
+
+    _capture_evidence(driver, "TC017", "tc017_transfer_opened")
+
+
+def _tc018_click_point(driver):
+    _click_visible_item(driver, "Point", "TC018")
+
+
+def _is_android_runtime_permission_popup_visible(driver):
+    root = ElementTree.fromstring(driver.page_source)
+    permission_packages = {
+        "com.android.permissioncontroller",
+        "com.google.android.permissioncontroller",
+    }
+    return any(
+        node.get("package", "") in permission_packages
+        and node.get("resource-id", "").endswith(":id/grant_dialog")
+        and node.get("displayed", "true").lower() == "true"
+        for node in root.iter()
+    )
+
+
+def _allow_android_runtime_permission_if_present(driver):
+    if not _is_android_runtime_permission_popup_visible(driver):
+        return False
+
+    allow_button = next(
+        (
+            element
+            for locator in (
+                (
+                    AppiumBy.ID,
+                    "com.android.permissioncontroller:id/permission_allow_button",
+                ),
+                (
+                    AppiumBy.ID,
+                    "com.google.android.permissioncontroller:id/permission_allow_button",
+                ),
+                (
+                    AppiumBy.ANDROID_UIAUTOMATOR,
+                    'new UiSelector().textMatches("(?i)^allow$")',
+                ),
+            )
+            for element in driver.find_elements(*locator)
+            if element.is_displayed() and element.is_enabled()
+        ),
+        None,
+    )
+    if allow_button is None:
+        raise AssertionError(
+            "Android runtime permission dialog appeared without a usable "
+            "Allow button."
+        )
+    allow_button.click()
+    WebDriverWait(driver, 15).until(
+        lambda current_driver: (
+            not _is_android_runtime_permission_popup_visible(current_driver)
+        )
+    )
+    return True
+
+
 def _click_package_item(driver, label, testcase):
     packages_title = (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().text("Packages")')
     if _tc007_find_text_element(driver, label) is None:
@@ -703,7 +816,14 @@ def _click_package_item(driver, label, testcase):
     )
     before_source = driver.page_source
     before_screenshot = driver.get_screenshot_as_png()
-    _tc007_click_text(driver, label)
+    clickable_bounds = _tc007_clickable_bounds_for_label(
+        before_source,
+        label,
+    )
+    if clickable_bounds is not None:
+        _tc007_click_bounds(driver, clickable_bounds)
+    else:
+        _tc007_click_text(driver, label)
     try:
         WebDriverWait(driver, 15).until(
             lambda current_driver: (

@@ -16,7 +16,7 @@ SAUCE_URL = os.getenv(
 )
 ATOM_APP_ID = os.getenv(
     "SAUCE_APP",
-    "storage:4d33df81-17be-474b-9021-643edd021a44",
+    "storage:2cdac6d4-7eb4-4ef6-903a-6f98eb11b77d",
 )
 MOBILE_NUMBER = os.getenv("MOBILE_NUMBER")
 ATOM_APP_PACKAGE = "mm.com.atom.store"
