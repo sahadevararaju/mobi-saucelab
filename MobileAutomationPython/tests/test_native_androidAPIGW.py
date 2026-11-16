@@ -744,6 +744,36 @@ def _tc018_click_point(driver):
     _click_visible_item(driver, "Point", "TC018")
 
 
+def _click_visible_item(driver, label, testcase):
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            (element := _tc007_find_text_element(current_driver, label))
+            and element.is_displayed()
+        )
+    )
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    clickable_bounds = _tc007_clickable_bounds_for_label(before_source, label)
+    if clickable_bounds is not None:
+        _tc007_click_bounds(driver, clickable_bounds)
+    else:
+        _tc007_click_text(driver, label)
+
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, testcase, "click_no_visible_response")
+        raise AssertionError(
+            f"Clicking {label} produced no visible screen change."
+        ) from error
+    _capture_evidence(driver, testcase, f"{testcase.lower()}_{label.lower()}")
+
+
 def _is_android_runtime_permission_popup_visible(driver):
     root = ElementTree.fromstring(driver.page_source)
     permission_packages = {
