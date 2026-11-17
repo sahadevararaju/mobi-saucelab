@@ -141,6 +141,42 @@ TEST_CASES = {
         "On the Transfer screen opened by TC017, click Point.",
         "The Point option responds to the click.",
     ),
+    "TC019": (
+        "Return to Home and verify the ATOM Store homepage",
+        "Authenticated user on the screen opened from Point",
+        "Return to Home using the Home control or Back, then verify the Home navigation and Popular control.",
+        "The ATOM Store Home screen is displayed with the Popular control and no OTP entry fields.",
+    ),
+    "TC020": (
+        "Open Kwat Ti Po Ya and verify its screen is displayed",
+        "Authenticated user on the ATOM Store Home screen; Kwat Ti Po Ya option",
+        "Click Kwat Ti Po Ya and inspect the resulting screen.",
+        "The Kwat Ti Po Ya screen is displayed after the option is clicked.",
+    ),
+    "TC021": (
+        "Click the Data icon on the Kwat Ti Po Ya screen",
+        "Kwat Ti Po Ya screen opened by TC020; Data icon",
+        "On the screen opened by TC020, click the Data icon and inspect the resulting screen.",
+        "The Data icon responds to the click and its destination screen is displayed.",
+    ),
+    "TC022": (
+        "Click the Voice icon on the Kwat Ti Po Ya screen",
+        "Kwat Ti Po Ya screen opened by TC020; Voice icon",
+        "On the screen opened by TC020, click the Voice icon and inspect the resulting screen.",
+        "The Voice icon responds to the click and its destination screen is displayed.",
+    ),
+    "TC023": (
+        "Click the Entertainment icon on the Kwat Ti Po Ya screen",
+        "Kwat Ti Po Ya screen opened by TC020; Entertainment icon",
+        "On the screen opened by TC020, click the Entertainment icon and inspect the resulting screen.",
+        "The Entertainment icon responds to the click and its destination screen is displayed.",
+    ),
+    "TC024": (
+        "Open Setting from the Home screen",
+        "Authenticated user; ATOM Store Home screen",
+        "Return to Home, verify the Home screen, and click the Setting navigation icon.",
+        "The Setting navigation item is selected and its screen is displayed.",
+    ),
  }
 
 
@@ -264,8 +300,14 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC016", _tc016_click_flexiplan, atom_store_driver),
         ("TC017", _tc017_click_transfer, atom_store_driver),
         ("TC018", _tc018_click_point, atom_store_driver),
+        ("TC019", _tc019_verify_homepage, atom_store_driver),
+        ("TC020", _tc020_click_kwat_ti_po_ya, atom_store_driver),
+        ("TC021", _tc021_click_data, atom_store_driver),
+        ("TC022", _tc022_click_voice, atom_store_driver),
+        ("TC023", _tc023_click_entertainment, atom_store_driver),
+        ("TC024", _tc024_click_setting, atom_store_driver),
     ]
-    tc007_error = None
+    testcase_errors = []
     for testcase in testcases:
         try:
             _run_testcase(
@@ -275,14 +317,16 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
                 *testcase[2:],
             )
         except Exception as error:
-            if testcase[0] != "TC007":
-                raise
-            tc007_error = error
+            testcase_errors.append((testcase[0], error))
 
-    if tc007_error is not None:
+    if testcase_errors:
+        failure_summary = "; ".join(
+            f"{testcase_id}: {error}"
+            for testcase_id, error in testcase_errors
+        )
         raise AssertionError(
-            f"TC007 failed; later cases were still executed: {tc007_error}"
-        ) from tc007_error
+            f"Test case failures (all cases were executed): {failure_summary}"
+        ) from testcase_errors[0][1]
 
 
 def _initialize_test_case_report(node):
@@ -742,6 +786,111 @@ def _tc017_click_transfer(driver):
 
 def _tc018_click_point(driver):
     _click_visible_item(driver, "Point", "TC018")
+
+
+def _tc019_verify_homepage(driver):
+    if not _is_home_navigation_selected(driver):
+        _capture_evidence(driver, "TC019", "before_home_navigation")
+        _tc008_return_home(driver)
+
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _is_store_home_screen(current_driver)
+            and (
+                (popular := _tc007_find_text_element(current_driver, "Popular"))
+                is not None
+            )
+            and popular.is_displayed()
+        )
+    )
+
+    _capture_evidence(driver, "TC019", "home_verified")
+
+
+def _tc020_click_kwat_ti_po_ya(driver):
+    # The Home screen also has a "Kwat Ti Po Ya" offer tile.  TC020 is
+    # intended to open the dedicated KwatTiPoYa section, which is the
+    # bottom-navigation item with this resource ID.
+    tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/offers4UFragment")
+        )
+    )
+    tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            current_driver.find_element(
+                AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/offers4UFragment"
+            ).get_attribute("selected")
+            == "true"
+        )
+    )
+    _capture_evidence(driver, "TC020", "kwat_ti_po_ya_tab")
+
+
+def _tc021_click_data(driver):
+    _click_visible_item(driver, "Data", "TC021")
+
+
+def _tc022_click_voice(driver):
+    _click_visible_item(driver, "Voice", "TC022")
+
+
+def _tc023_click_entertainment(driver):
+    # TC022 leaves the app on the Voice results page. Entertainment is exposed
+    # on the Kwat Ti Po Ya category screen. Back returns to Home, so reopen
+    # that section before selecting Entertainment.
+    back_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((AppiumBy.ACCESSIBILITY_ID, "Back"))
+    )
+    back_button.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: _is_home_navigation_selected(current_driver)
+    )
+    kwat_ti_po_ya_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/offers4UFragment")
+        )
+    )
+    kwat_ti_po_ya_tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            current_driver.find_element(
+                AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/offers4UFragment"
+            ).get_attribute("selected")
+            == "true"
+            and
+            (element := _tc007_find_text_element(current_driver, "Entertainment"))
+            and element.is_displayed()
+        )
+    )
+    _click_visible_item(driver, "Entertainment", "TC023")
+
+
+def _tc024_click_setting(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            _is_store_home_screen(current_driver)
+            and _is_home_navigation_selected(current_driver)
+        )
+    )
+
+    setting_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment")
+        )
+    )
+    setting_tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            current_driver.find_element(
+                AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment"
+            ).get_attribute("selected")
+            == "true"
+        )
+    )
+    _capture_evidence(driver, "TC024", "setting_screen")
 
 
 def _click_visible_item(driver, label, testcase):

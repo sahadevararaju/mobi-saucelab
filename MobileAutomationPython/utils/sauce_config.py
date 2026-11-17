@@ -12,11 +12,11 @@ SAUCE_USERNAME = os.getenv("SAUCE_USERNAME")
 SAUCE_ACCESS_KEY = os.getenv("SAUCE_ACCESS_KEY")
 SAUCE_URL = os.getenv(
     "SAUCE_URL",
-    "https://ondemand.eu-central-1.saucelabs.com/wd/hub",
+    "https://ondemand.us-west-1.saucelabs.com/wd/hub",
 )
 ATOM_APP_ID = os.getenv(
     "SAUCE_APP",
-    "storage:2cdac6d4-7eb4-4ef6-903a-6f98eb11b77d",
+    "storage:2b1f5db9-e82e-4dcb-a29c-3f903484373a",
 )
 MOBILE_NUMBER = os.getenv("MOBILE_NUMBER")
 ATOM_APP_PACKAGE = "mm.com.atom.store"
