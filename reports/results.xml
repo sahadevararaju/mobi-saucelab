@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="661.171" timestamp="2026-11-17T11:12:28.713258+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="660.857"><failure message="AssertionError: Test case failures (all cases were executed): TC007: Scratch-card response did not show the expected Okay voucher rejection, and no verified voucher-success landmark is known.">atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="7cc28ff9-bd67-4e08-ba7c-a9df72cad2fd")&gt;
-capsys = &lt;_pytest.capture.CaptureFixture object at 0x000001FBCF77D2B0&gt;
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="642.778" timestamp="2026-11-18T13:26:30.327804+06:30" hostname="DESKTOP-D2N453N"><testcase classname="tests.test_native_androidAPIGW" name="test_atom_store_tc001_to_tc006" time="642.242"><failure message="AssertionError: Test case failures (all cases were executed): TC007: Scratch-card response did not show the expected Okay voucher rejection, and no verified voucher-success landmark is known.">atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="401684a1-5859-4204-9fec-fc06c5dce074")&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x000002578D2EC440&gt;
 request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;&gt;
 
     @pytest.mark.sauce
@@ -30,6 +30,10 @@ request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;
             ("TC022", _tc022_click_voice, atom_store_driver),
             ("TC023", _tc023_click_entertainment, atom_store_driver),
             ("TC024", _tc024_click_setting, atom_store_driver),
+            ("TC025", _tc025_click_all_balances, atom_store_driver),
+            ("TC026", _tc026_click_prepaid_plan, atom_store_driver),
+            ("TC027", _tc027_click_usage_and_purchased_history, atom_store_driver),
+            ("TC028", _tc028_share_atom_store_app, atom_store_driver),
         ]
         testcase_errors = []
         for testcase in testcases:
@@ -41,16 +45,16 @@ request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;
                     *testcase[2:],
                 )
 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:313: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:186: in _run_testcase
+MobileAutomationPython\tests\test_native_androidAPIGW.py:341: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+MobileAutomationPython\tests\test_native_androidAPIGW.py:210: in _run_testcase
     test_function(*args)
-MobileAutomationPython\tests\test_native_androidAPIGW.py:1032: in _tc007_click_top_up_icon
+MobileAutomationPython\tests\test_native_androidAPIGW.py:1248: in _tc007_click_top_up_icon
     scratch_card_response = _tc007_scratch_card_flow(driver)
                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
 
-driver = &lt;appium.webdriver.webdriver.WebDriver (session="7cc28ff9-bd67-4e08-ba7c-a9df72cad2fd")&gt;
+driver = &lt;appium.webdriver.webdriver.WebDriver (session="401684a1-5859-4204-9fec-fc06c5dce074")&gt;
 
     def _tc007_scratch_card_flow(driver):
         scratch_card_number = "36885710672098262"
@@ -122,12 +126,12 @@ driver = &lt;appium.webdriver.webdriver.WebDriver (session="7cc28ff9-bd67-4e08-b
             )
 E           AssertionError: Scratch-card response did not show the expected Okay voucher rejection, and no verified voucher-success landmark is known.
 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:1113: AssertionError
+MobileAutomationPython\tests\test_native_androidAPIGW.py:1329: AssertionError
 
 The above exception was the direct cause of the following exception:
 
-atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="7cc28ff9-bd67-4e08-ba7c-a9df72cad2fd")&gt;
-capsys = &lt;_pytest.capture.CaptureFixture object at 0x000001FBCF77D2B0&gt;
+atom_store_driver = &lt;appium.webdriver.webdriver.WebDriver (session="401684a1-5859-4204-9fec-fc06c5dce074")&gt;
+capsys = &lt;_pytest.capture.CaptureFixture object at 0x000002578D2EC440&gt;
 request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;&gt;
 
     @pytest.mark.sauce
@@ -158,6 +162,10 @@ request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;
             ("TC022", _tc022_click_voice, atom_store_driver),
             ("TC023", _tc023_click_entertainment, atom_store_driver),
             ("TC024", _tc024_click_setting, atom_store_driver),
+            ("TC025", _tc025_click_all_balances, atom_store_driver),
+            ("TC026", _tc026_click_prepaid_plan, atom_store_driver),
+            ("TC027", _tc027_click_usage_and_purchased_history, atom_store_driver),
+            ("TC028", _tc028_share_atom_store_app, atom_store_driver),
         ]
         testcase_errors = []
         for testcase in testcases:
@@ -181,4 +189,4 @@ request = &lt;FixtureRequest for &lt;Function test_atom_store_tc001_to_tc006&gt;
             ) from testcase_errors[0][1]
 E           AssertionError: Test case failures (all cases were executed): TC007: Scratch-card response did not show the expected Okay voucher rejection, and no verified voucher-success landmark is known.
 
-MobileAutomationPython\tests\test_native_androidAPIGW.py:327: AssertionError</failure></testcase></testsuite></testsuites>
+MobileAutomationPython\tests\test_native_androidAPIGW.py:355: AssertionError</failure></testcase></testsuite></testsuites>

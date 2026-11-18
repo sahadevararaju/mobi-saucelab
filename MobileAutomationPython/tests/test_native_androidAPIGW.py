@@ -177,6 +177,30 @@ TEST_CASES = {
         "Return to Home, verify the Home screen, and click the Setting navigation icon.",
         "The Setting navigation item is selected and its screen is displayed.",
     ),
+    "TC025": (
+        "Open All Balances from Setting",
+        "Authenticated user on the Setting screen; All Balances option",
+        "Click All Balances and verify its screen is displayed.",
+        "The All Balances screen is displayed.",
+    ),
+    "TC026": (
+        "Open Prepaid Plan from Setting",
+        "Authenticated user on the Setting screen; Prepaid Plan option",
+        "Return to Setting if needed, click Prepaid Plan, and verify its screen is displayed.",
+        "The Prepaid Plan screen is displayed.",
+    ),
+    "TC027": (
+        "Open Usage and Purchased History from Setting",
+        "Authenticated user on the Setting screen; Usage and Purchased History option",
+        "Return to Setting if needed, click Usage and Purchased History, and verify its screen is displayed.",
+        "The History screen is displayed with Purchased Pack and Usage History tabs.",
+    ),
+    "TC028": (
+        "Share the ATOM Store app from Setting",
+        "Authenticated user on the Setting screen; Share ATOM Store App option",
+        "Return to Setting if needed and click Share ATOM Store App.",
+        "The app sharing interface is displayed.",
+    ),
  }
 
 
@@ -306,6 +330,10 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC022", _tc022_click_voice, atom_store_driver),
         ("TC023", _tc023_click_entertainment, atom_store_driver),
         ("TC024", _tc024_click_setting, atom_store_driver),
+        ("TC025", _tc025_click_all_balances, atom_store_driver),
+        ("TC026", _tc026_click_prepaid_plan, atom_store_driver),
+        ("TC027", _tc027_click_usage_and_purchased_history, atom_store_driver),
+        ("TC028", _tc028_share_atom_store_app, atom_store_driver),
     ]
     testcase_errors = []
     for testcase in testcases:
@@ -893,6 +921,196 @@ def _tc024_click_setting(driver):
     _capture_evidence(driver, "TC024", "setting_screen")
 
 
+def _tc025_click_all_balances(driver):
+    all_balances_label = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            element
+            if (
+                (element := _tc007_find_text_element(current_driver, "All Balances"))
+                and element.is_displayed()
+            )
+            else False
+        )
+    )
+    before_source = driver.page_source
+
+    # The hierarchy's root height differs from the device window height on
+    # this screen. Coordinate scaling can shift a tap down onto Prepaid Plan,
+    # so click the exact All Balances text element through Appium instead.
+    all_balances_label.click()
+
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            current_driver.page_source != before_source
+            and (title := _tc007_find_text_element(current_driver, "All Balances"))
+            and title.is_displayed()
+        )
+    )
+    _capture_evidence(driver, "TC025", "all_balances_screen")
+
+
+def _tc026_click_prepaid_plan(driver):
+    settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
+
+    def _is_settings_screen(current_driver):
+        try:
+            return (
+                current_driver.find_element(AppiumBy.ID, settings_tab_id)
+                .get_attribute("selected")
+                == "true"
+                and _tc007_find_text_element(current_driver, "All Balances")
+                is not None
+                and _tc007_find_text_element(current_driver, "Prepaid Plan")
+                is not None
+            )
+        except Exception:
+            return False
+
+    if not _is_settings_screen(driver):
+        driver.back()
+        WebDriverWait(driver, 20).until(_is_settings_screen)
+
+    prepaid_plan_label = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            element
+            if (
+                (element := _tc007_find_text_element(current_driver, "Prepaid Plan"))
+                and element.is_displayed()
+            )
+            else False
+        )
+    )
+    before_source = driver.page_source
+    prepaid_plan_label.click()
+
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            current_driver.page_source != before_source
+            and (title := _tc007_find_text_element(current_driver, "Prepaid Plan"))
+            and title.is_displayed()
+            and not _is_settings_screen(current_driver)
+        )
+    )
+    _capture_evidence(driver, "TC026", "prepaid_plan_screen")
+
+
+def _tc027_click_usage_and_purchased_history(driver):
+    settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
+    settings_labels = ("All Balances", "Prepaid Plan", "Usage and Purchased History")
+
+    def _is_settings_screen(current_driver):
+        try:
+            settings_tab = current_driver.find_element(AppiumBy.ID, settings_tab_id)
+            return (
+                settings_tab.get_attribute("selected") == "true"
+                and all(
+                    (element := _tc007_find_text_element(current_driver, label))
+                    and element.is_displayed()
+                    for label in settings_labels
+                )
+            )
+        except Exception:
+            return False
+
+    if not _is_settings_screen(driver):
+        driver.back()
+        WebDriverWait(driver, 20).until(_is_settings_screen)
+
+    history_label = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            element
+            if (
+                (element := _tc007_find_text_element(
+                    current_driver, "Usage and Purchased History"
+                ))
+                and element.is_displayed()
+            )
+            else False
+        )
+    )
+    before_source = driver.page_source
+    history_label.click()
+
+    def _is_history_screen(current_driver):
+        try:
+            title = current_driver.find_element(
+                AppiumBy.ID,
+                f"{ATOM_APP_PACKAGE}:id/title",
+            )
+            return (
+                current_driver.page_source != before_source
+                and title.is_displayed()
+                and title.text.strip() == "History"
+                and not _is_settings_screen(current_driver)
+                and all(
+                    (tab := _tc007_find_text_element(current_driver, label))
+                    and tab.is_displayed()
+                    for label in ("Purchased Pack", "Usage History")
+                )
+            )
+        except Exception:
+            return False
+
+    WebDriverWait(driver, 20).until(
+        _is_history_screen
+    )
+    _capture_evidence(driver, "TC027", "usage_and_purchased_history_screen")
+
+
+def _tc028_share_atom_store_app(driver):
+    settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
+    settings_labels = ("All Balances", "Prepaid Plan", "Share ATOM Store App")
+
+    def _is_settings_screen(current_driver):
+        try:
+            settings_tab = current_driver.find_element(AppiumBy.ID, settings_tab_id)
+            return (
+                settings_tab.get_attribute("selected") == "true"
+                and all(
+                    (element := _tc007_find_text_element(current_driver, label))
+                    and element.is_displayed()
+                    for label in settings_labels
+                )
+            )
+        except Exception:
+            return False
+
+    if not _is_settings_screen(driver):
+        driver.back()
+        WebDriverWait(driver, 20).until(_is_settings_screen)
+
+    share_label = WebDriverWait(driver, 20).until(
+        lambda current_driver: (
+            element
+            if (
+                (element := _tc007_find_text_element(
+                    current_driver, "Share ATOM Store App"
+                ))
+                and element.is_displayed()
+            )
+            else False
+        )
+    )
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    share_label.click()
+
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC028", "share_no_visible_response")
+        raise AssertionError(
+            "Clicking Share ATOM Store App produced no visible response."
+        ) from error
+
+    _capture_evidence(driver, "TC028", "share_interface")
+
+
 def _click_visible_item(driver, label, testcase):
     WebDriverWait(driver, 20).until(
         lambda current_driver: (
@@ -988,21 +1206,19 @@ def _click_package_item(driver, label, testcase):
             )
         )
 
-    WebDriverWait(driver, 20).until(
+    package_item = WebDriverWait(driver, 20).until(
         lambda current_driver: (
-            _tc007_find_text_element(current_driver, label) or False
+            (element := _tc007_find_text_element(current_driver, label))
+            and element.is_displayed()
+            and element
         )
     )
     before_source = driver.page_source
     before_screenshot = driver.get_screenshot_as_png()
-    clickable_bounds = _tc007_clickable_bounds_for_label(
-        before_source,
-        label,
-    )
-    if clickable_bounds is not None:
-        _tc007_click_bounds(driver, clickable_bounds)
-    else:
-        _tc007_click_text(driver, label)
+    # The XML hierarchy's root height can differ from the device window size,
+    # so scaled coordinates may miss these package chips. Click the exact
+    # visible label element through Appium instead.
+    package_item.click()
     try:
         WebDriverWait(driver, 15).until(
             lambda current_driver: (
