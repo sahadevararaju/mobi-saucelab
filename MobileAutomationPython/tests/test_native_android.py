@@ -7,6 +7,7 @@ from appium.webdriver.common.appiumby import AppiumBy
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from utils.excel_report import get_device_details
 from utils.sauce_config import ATOM_APP_PACKAGE, MOBILE_NUMBER
 
 
@@ -216,7 +217,7 @@ def _save_screenshot(driver, filename):
 
 @pytest.mark.sauce
 def test_atom_store_tc001_to_tc030(atom_store_driver, capsys, request):
-    _initialize_test_case_report(request.node)
+    _initialize_test_case_report(request.node, atom_store_driver)
     testcases = [
         ("TC001", _tc001_launch_latest_apk, atom_store_driver),
         ("TC002", _tc002_verify_welcome_screen, atom_store_driver),
@@ -305,8 +306,9 @@ def test_atom_store_tc001_to_tc030(atom_store_driver, capsys, request):
         _run_testcase(request.node, testcase[0], testcase[1], *testcase[2:])
 
 
-def _initialize_test_case_report(node):
+def _initialize_test_case_report(node, driver):
     node._excel_test_case_results = {}
+    device, operating_system = get_device_details(driver.capabilities)
     for testcase_id, case_details in TEST_CASES.items():
         scenario, test_data, steps, expected_result = case_details
         node._excel_test_case_results[testcase_id] = {
@@ -314,10 +316,12 @@ def _initialize_test_case_report(node):
             "Module/Feature": "ATOM Store",
             "Test Data": test_data,
             "Pre-condition": "ATOM Store app is installed and available.",
-            "Test Scenario": f"{testcase_id}: {scenario}",
+            "Test Scenario": scenario,
             "Test Steps": steps,
             "Expected Result": expected_result,
             "Environment": "Sauce Labs",
+            "Device": device,
+            "OS": operating_system,
             "Result": "Not Run",
             "Error Message": "Not executed because an earlier test case failed.",
         }

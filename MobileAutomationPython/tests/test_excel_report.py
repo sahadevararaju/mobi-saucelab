@@ -50,8 +50,11 @@ def test_each_run_replaces_prior_results_in_single_workbook(
     saved_workbook = load_workbook(report_file, data_only=True)
     sheet = saved_workbook[excel_report.SHEET_NAME]
 
-    assert saved_workbook.sheetnames == [excel_report.SHEET_NAME]
+    assert saved_workbook.sheetnames == [
+        excel_report.RESULTS_CHART_SHEET_NAME,
+        excel_report.SHEET_NAME,
+    ]
     assert sheet.max_row == 2
     assert sheet["A2"].value == "TC002"
-    assert sheet["I2"].value == "Passed"
+    assert sheet["K2"].value == "Passed"
     assert len(list(report_dir.glob("*.xlsx"))) == 1

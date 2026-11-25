@@ -10,6 +10,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from utils.excel_report import get_device_details
 from utils.sauce_config import ATOM_APP_PACKAGE, MOBILE_NUMBER
 
 
@@ -82,126 +83,154 @@ TEST_CASES = {
         "The Packages screen is displayed with visible text exactly 'Packages'.",
     ),
     "TC009": (
+        "Open KHYKM Tickets from the Home screen",
+        "Authenticated user on the Packages screen opened by TC008; Home KHYKM Tickets icon",
+        "Return Home from Packages, click KHYKM Tickets, and verify a visible response.",
+        "The KHYKM Tickets option responds to the click.",
+    ),
+    "TC010": (
         "Select KyiKwar from the Packages screen",
         "Packages screen; KyiKwar option",
         "Click KyiKwar and inspect the resulting screen state.",
         "The KyiKwar option responds to the click.",
     ),
-    "TC010": (
+    "TC011": (
         "Select All-in-One from the Packages screen",
         "Packages screen; All-in-One option",
         "Click All-in-One and inspect the resulting screen state.",
         "The All-in-One option responds to the click.",
     ),
-    "TC011": (
+    "TC012": (
         "Select TikTok from the Packages screen",
         "Packages screen; TikTok option",
         "Click TikTok and inspect the resulting screen state.",
         "The TikTok option responds to the click.",
     ),
-    "TC012": (
+    "TC013": (
         "Select Youtube from the Packages screen",
         "Packages screen; Youtube option",
         "Click Youtube and inspect the resulting screen state.",
         "The Youtube option responds to the click.",
     ),
-    "TC013": (
+    "TC014": (
         "Select Telegram from the Packages screen",
         "Packages screen; Telegram option",
         "Click Telegram and inspect the resulting screen state.",
         "The Telegram option responds to the click.",
     ),
-    "TC014": (
+    "TC015": (
         "Select MegaPack from the Packages screen",
         "Packages screen; MegaPack option",
         "Click MegaPack and inspect the resulting screen state.",
         "The MegaPack option responds to the click.",
     ),
-    "TC015": (
+    "TC016": (
         "Select Super Htaw from the Packages screen",
         "Packages screen; Super Htaw option",
         "Click Super Htaw and inspect the resulting screen state.",
         "The Super Htaw option responds to the click.",
     ),
-    "TC016": (
+    "TC017": (
         "Select Flexiplan from the Packages screen",
         "Packages screen; Flexiplan option",
         "Return to Packages using Back or navigate from Home through Packs, then click Flexiplan.",
         "The Flexiplan option responds to the click.",
     ),
-    "TC017": (
+    "TC018": (
         "Open Transfer from the Home screen",
         "Authenticated Home screen; Transfer option",
         "Return to Home using the Home control or Back, then click Transfer.",
         "The Transfer destination opens after any Android permission prompt is handled.",
     ),
-    "TC018": (
+    "TC019": (
         "Select Point on the Transfer screen",
         "Transfer screen; Point option",
-        "On the Transfer screen opened by TC017, click Point.",
+        "On the Transfer screen opened by TC018, click Point.",
         "The Point option responds to the click.",
     ),
-    "TC019": (
+    "TC020": (
         "Return to Home and verify the ATOM Store homepage",
         "Authenticated user on the screen opened from Point",
         "Return to Home using the Home control or Back, then verify the Home navigation and Popular control.",
         "The ATOM Store Home screen is displayed with the Popular control and no OTP entry fields.",
     ),
-    "TC020": (
+    "TC021": (
         "Open Kwat Ti Po Ya and verify its screen is displayed",
         "Authenticated user on the ATOM Store Home screen; Kwat Ti Po Ya option",
         "Click Kwat Ti Po Ya and inspect the resulting screen.",
         "The Kwat Ti Po Ya screen is displayed after the option is clicked.",
     ),
-    "TC021": (
+    "TC022": (
         "Click the Data icon on the Kwat Ti Po Ya screen",
-        "Kwat Ti Po Ya screen opened by TC020; Data icon",
-        "On the screen opened by TC020, click the Data icon and inspect the resulting screen.",
+        "Kwat Ti Po Ya screen opened by TC021; Data icon",
+        "On the screen opened by TC021, click the Data icon and inspect the resulting screen.",
         "The Data icon responds to the click and its destination screen is displayed.",
     ),
-    "TC022": (
+    "TC023": (
         "Click the Voice icon on the Kwat Ti Po Ya screen",
-        "Kwat Ti Po Ya screen opened by TC020; Voice icon",
-        "On the screen opened by TC020, click the Voice icon and inspect the resulting screen.",
+        "Kwat Ti Po Ya screen opened by TC021; Voice icon",
+        "On the screen opened by TC021, click the Voice icon and inspect the resulting screen.",
         "The Voice icon responds to the click and its destination screen is displayed.",
     ),
-    "TC023": (
+    "TC024": (
         "Click the Entertainment icon on the Kwat Ti Po Ya screen",
-        "Kwat Ti Po Ya screen opened by TC020; Entertainment icon",
-        "On the screen opened by TC020, click the Entertainment icon and inspect the resulting screen.",
+        "Kwat Ti Po Ya screen opened by TC021; Entertainment icon",
+        "On the screen opened by TC021, click the Entertainment icon and inspect the resulting screen.",
         "The Entertainment icon responds to the click and its destination screen is displayed.",
     ),
-    "TC024": (
+    "TC025": (
         "Open Setting from the Home screen",
         "Authenticated user; ATOM Store Home screen",
         "Return to Home, verify the Home screen, and click the Setting navigation icon.",
         "The Setting navigation item is selected and its screen is displayed.",
     ),
-    "TC025": (
+    "TC027": (
         "Open All Balances from Setting",
         "Authenticated user on the Setting screen; All Balances option",
         "Click All Balances and verify its screen is displayed.",
         "The All Balances screen is displayed.",
     ),
-    "TC026": (
+    "TC028": (
         "Open Prepaid Plan from Setting",
         "Authenticated user on the Setting screen; Prepaid Plan option",
         "Return to Setting if needed, click Prepaid Plan, and verify its screen is displayed.",
         "The Prepaid Plan screen is displayed.",
     ),
-    "TC027": (
+    "TC029": (
         "Open Usage and Purchased History from Setting",
         "Authenticated user on the Setting screen; Usage and Purchased History option",
         "Return to Setting if needed, click Usage and Purchased History, and verify its screen is displayed.",
         "The History screen is displayed with Purchased Pack and Usage History tabs.",
     ),
-    "TC028": (
+    "TC030": (
         "Share the ATOM Store app from Setting",
         "Authenticated user on the Setting screen; Share ATOM Store App option",
         "Return to Setting if needed and click Share ATOM Store App.",
         "The app sharing interface is displayed.",
     ),
+    "TC031": (
+        "Open Change Language from Setting",
+        "Authenticated user on the Setting screen; Change language option",
+        "Return to Setting, click Change language, and verify a visible response.",
+        "The language selection interface is displayed.",
+    ),
+    "TC032": (
+        "Open Store Location from Setting",
+        "Authenticated user on the Setting screen; Store Location option",
+        "Return to Setting, scroll to Store Location, click it, and inspect the resulting screen.",
+        "The Store Location option responds and its resulting screen is displayed.",
+    ),
+    "TC026": (
+        "Open Call Me Back from Setting",
+        "Authenticated user on the Setting screen opened by TC025; Call Me Back option",
+        "Scroll the Setting screen to Call Me Back, click it, and inspect the resulting interface.",
+        "The Call Me Back option responds and its interface is displayed.",
+    ),
  }
+
+TEST_CASES = dict(
+    sorted(TEST_CASES.items(), key=lambda item: int(item[0][2:]))
+)
 
 
 def _run_testcase(node, testcase_id, test_function, *args):
@@ -303,8 +332,8 @@ def _capture_evidence(driver, testcase_id, stage):
 
 
 @pytest.mark.sauce
-def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
-    _initialize_test_case_report(request.node)
+def test_atom_store_tc001_to_tc032(atom_store_driver, capsys, request):
+    _initialize_test_case_report(request.node, atom_store_driver)
     testcases = [
         ("TC001", _tc001_launch_latest_apk, atom_store_driver),
         ("TC002", _tc002_verify_welcome_screen, atom_store_driver),
@@ -314,26 +343,30 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ("TC006", _tc006_verify_store_home_screen, atom_store_driver),
         ("TC007", _tc007_click_top_up_icon, atom_store_driver),
         ("TC008", _tc008_click_packs_icon, atom_store_driver),
-        ("TC009", _tc009_click_kyikwar, atom_store_driver),
-        ("TC010", _tc010_click_all_in_one, atom_store_driver),
-        ("TC011", _tc011_click_tiktok, atom_store_driver),
-        ("TC012", _tc012_click_youtube, atom_store_driver),
-        ("TC013", _tc013_click_telegram, atom_store_driver),
-        ("TC014", _tc014_click_megapack, atom_store_driver),
-        ("TC015", _tc015_click_super_htaw, atom_store_driver),
-        ("TC016", _tc016_click_flexiplan, atom_store_driver),
-        ("TC017", _tc017_click_transfer, atom_store_driver),
-        ("TC018", _tc018_click_point, atom_store_driver),
-        ("TC019", _tc019_verify_homepage, atom_store_driver),
-        ("TC020", _tc020_click_kwat_ti_po_ya, atom_store_driver),
-        ("TC021", _tc021_click_data, atom_store_driver),
-        ("TC022", _tc022_click_voice, atom_store_driver),
-        ("TC023", _tc023_click_entertainment, atom_store_driver),
-        ("TC024", _tc024_click_setting, atom_store_driver),
-        ("TC025", _tc025_click_all_balances, atom_store_driver),
-        ("TC026", _tc026_click_prepaid_plan, atom_store_driver),
-        ("TC027", _tc027_click_usage_and_purchased_history, atom_store_driver),
-        ("TC028", _tc028_share_atom_store_app, atom_store_driver),
+        ("TC009", _tc009_click_khykm_tickets, atom_store_driver),
+        ("TC010", _tc010_click_kyikwar, atom_store_driver),
+        ("TC011", _tc011_click_all_in_one, atom_store_driver),
+        ("TC012", _tc012_click_tiktok, atom_store_driver),
+        ("TC013", _tc013_click_youtube, atom_store_driver),
+        ("TC014", _tc014_click_telegram, atom_store_driver),
+        ("TC015", _tc015_click_megapack, atom_store_driver),
+        ("TC016", _tc016_click_super_htaw, atom_store_driver),
+        ("TC017", _tc017_click_flexiplan, atom_store_driver),
+        ("TC018", _tc018_click_transfer, atom_store_driver),
+        ("TC019", _tc019_click_point, atom_store_driver),
+        ("TC020", _tc020_verify_homepage, atom_store_driver),
+        ("TC021", _tc021_click_kwat_ti_po_ya, atom_store_driver),
+        ("TC022", _tc022_click_data, atom_store_driver),
+        ("TC023", _tc023_click_voice, atom_store_driver),
+        ("TC024", _tc024_click_entertainment, atom_store_driver),
+        ("TC025", _tc025_click_setting, atom_store_driver),
+        ("TC026", _tc026_click_call_me_back, atom_store_driver),
+        ("TC027", _tc027_click_all_balances, atom_store_driver),
+        ("TC028", _tc028_click_prepaid_plan, atom_store_driver),
+        ("TC029", _tc029_click_usage_and_purchased_history, atom_store_driver),
+        ("TC030", _tc030_share_atom_store_app, atom_store_driver),
+        ("TC031", _tc031_click_change_language, atom_store_driver),
+        ("TC032", _tc032_click_store_location, atom_store_driver),
     ]
     testcase_errors = []
     for testcase in testcases:
@@ -357,8 +390,9 @@ def test_atom_store_tc001_to_tc006(atom_store_driver, capsys, request):
         ) from testcase_errors[0][1]
 
 
-def _initialize_test_case_report(node):
+def _initialize_test_case_report(node, driver):
     node._excel_test_case_results = {}
+    device, operating_system = get_device_details(driver.capabilities)
     for testcase_id, case_details in TEST_CASES.items():
         scenario, test_data, steps, expected_result = case_details
         node._excel_test_case_results[testcase_id] = {
@@ -366,10 +400,12 @@ def _initialize_test_case_report(node):
             "Module/Feature": "ATOM Store",
             "Test Data": test_data,
             "Pre-condition": "ATOM Store app is installed and available.",
-            "Test Scenario": f"{testcase_id}: {scenario}",
+            "Test Scenario": scenario,
             "Test Steps": steps,
             "Expected Result": expected_result,
             "Environment": "Sauce Labs",
+            "Device": device,
+            "OS": operating_system,
             "Result": "Not Run",
             "Error Message": "Not executed because an earlier test case failed.",
         }
@@ -667,6 +703,78 @@ def _tc008_click_packs_icon(driver):
     _capture_evidence(driver, "TC008", "008_packages_screen")
 
 
+def _tc009_click_khykm_tickets(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+
+    try:
+        tickets_icon = WebDriverWait(driver, 20).until(
+            lambda current_driver: (
+                element
+                if (
+                    (element := _tc007_find_text_element(
+                        current_driver, "KHYKM Tickets"
+                    ))
+                    and element.is_displayed()
+                )
+                else False
+            )
+        )
+        before_source = driver.page_source
+        before_screenshot = driver.get_screenshot_as_png()
+        tickets_icon.click()
+
+        WebDriverWait(driver, 20).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except Exception as error:
+        try:
+            _capture_evidence(driver, "TC009", "khykm_tickets_failure_state")
+        except Exception as evidence_error:
+            print(f"TC009 failure evidence capture failed: {evidence_error}")
+
+        try:
+            _tc009_restore_packages(driver)
+        except Exception as recovery_error:
+            raise AssertionError(
+                "TC009 could not complete the KHYKM Tickets step and could "
+                "not restore the Packages screen for subsequent test cases: "
+                f"{recovery_error}"
+            ) from error
+
+        raise AssertionError(
+            "TC009 could not find or open KHYKM Tickets: "
+            f"{error}. Restored the Packages screen so subsequent test "
+            "cases can continue."
+        ) from error
+
+    _capture_evidence(driver, "TC009", "khykm_tickets_screen")
+
+    _tc009_restore_packages(driver)
+
+
+def _is_packages_screen(driver):
+    packages_title = _tc007_find_text_element(driver, "Packages")
+    return packages_title is not None and packages_title.is_displayed()
+
+
+def _tc009_restore_packages(driver):
+    # Restore the state established by TC008 even if KHYKM Tickets is absent
+    # or opens a destination without Home navigation.
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+    packs_icon = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable((AppiumBy.ACCESSIBILITY_ID, "Packs"))
+    )
+    packs_icon.click()
+    WebDriverWait(driver, 30).until(
+        lambda current_driver: _is_packages_screen(current_driver)
+    )
+
+
 def _tc008_return_home(driver):
     for _ in range(5):
         if _is_home_navigation_selected(driver):
@@ -739,39 +847,39 @@ def _tc007_bounds_for_accessibility_label(source, label):
     return None
 
 
-def _tc009_click_kyikwar(driver):
-    _click_package_item(driver, "KyiKwar", "TC009")
+def _tc010_click_kyikwar(driver):
+    _click_package_item(driver, "KyiKwar", "TC010")
 
 
-def _tc010_click_all_in_one(driver):
-    _click_package_item(driver, "All-in-One", "TC010")
+def _tc011_click_all_in_one(driver):
+    _click_package_item(driver, "All-in-One", "TC011")
 
 
-def _tc011_click_tiktok(driver):
-    _click_package_item(driver, "TikTok", "TC011")
+def _tc012_click_tiktok(driver):
+    _click_package_item(driver, "TikTok", "TC012")
 
 
-def _tc012_click_youtube(driver):
-    _click_package_item(driver, "Youtube", "TC012")
+def _tc013_click_youtube(driver):
+    _click_package_item(driver, "Youtube", "TC013")
 
 
-def _tc013_click_telegram(driver):
-    _click_package_item(driver, "Telegram", "TC013")
+def _tc014_click_telegram(driver):
+    _click_package_item(driver, "Telegram", "TC014")
 
 
-def _tc014_click_megapack(driver):
-    _click_package_item(driver, "MegaPack", "TC014")
+def _tc015_click_megapack(driver):
+    _click_package_item(driver, "MegaPack", "TC015")
 
 
-def _tc015_click_super_htaw(driver):
-    _click_package_item(driver, "Super Htaw", "TC015")
+def _tc016_click_super_htaw(driver):
+    _click_package_item(driver, "Super Htaw", "TC016")
 
 
-def _tc016_click_flexiplan(driver):
-    _click_package_item(driver, "Flexiplan", "TC016")
+def _tc017_click_flexiplan(driver):
+    _click_package_item(driver, "Flexiplan", "TC017")
 
 
-def _tc017_click_transfer(driver):
+def _tc018_click_transfer(driver):
     _tc008_return_home(driver)
     WebDriverWait(driver, 20).until(
         lambda current_driver: (
@@ -803,22 +911,22 @@ def _tc017_click_transfer(driver):
                 )
             )
     except TimeoutException as error:
-        _capture_evidence(driver, "TC017", "transfer_open_failed")
+        _capture_evidence(driver, "TC018", "transfer_open_failed")
         raise AssertionError(
-            "TC017 clicked Transfer but the destination did not finish "
+            "TC018 clicked Transfer but the destination did not finish "
             "opening."
         ) from error
 
-    _capture_evidence(driver, "TC017", "tc017_transfer_opened")
+    _capture_evidence(driver, "TC018", "tc018_transfer_opened")
 
 
-def _tc018_click_point(driver):
-    _click_visible_item(driver, "Point", "TC018")
+def _tc019_click_point(driver):
+    _click_visible_item(driver, "Point", "TC019")
 
 
-def _tc019_verify_homepage(driver):
+def _tc020_verify_homepage(driver):
     if not _is_home_navigation_selected(driver):
-        _capture_evidence(driver, "TC019", "before_home_navigation")
+        _capture_evidence(driver, "TC020", "before_home_navigation")
         _tc008_return_home(driver)
 
     WebDriverWait(driver, 20).until(
@@ -832,11 +940,11 @@ def _tc019_verify_homepage(driver):
         )
     )
 
-    _capture_evidence(driver, "TC019", "home_verified")
+    _capture_evidence(driver, "TC020", "home_verified")
 
 
-def _tc020_click_kwat_ti_po_ya(driver):
-    # The Home screen also has a "Kwat Ti Po Ya" offer tile.  TC020 is
+def _tc021_click_kwat_ti_po_ya(driver):
+    # The Home screen also has a "Kwat Ti Po Ya" offer tile.  TC021 is
     # intended to open the dedicated KwatTiPoYa section, which is the
     # bottom-navigation item with this resource ID.
     tab = WebDriverWait(driver, 20).until(
@@ -853,19 +961,19 @@ def _tc020_click_kwat_ti_po_ya(driver):
             == "true"
         )
     )
-    _capture_evidence(driver, "TC020", "kwat_ti_po_ya_tab")
+    _capture_evidence(driver, "TC021", "kwat_ti_po_ya_tab")
 
 
-def _tc021_click_data(driver):
-    _click_visible_item(driver, "Data", "TC021")
+def _tc022_click_data(driver):
+    _click_visible_item(driver, "Data", "TC022")
 
 
-def _tc022_click_voice(driver):
-    _click_visible_item(driver, "Voice", "TC022")
+def _tc023_click_voice(driver):
+    _click_visible_item(driver, "Voice", "TC023")
 
 
-def _tc023_click_entertainment(driver):
-    # TC022 leaves the app on the Voice results page. Entertainment is exposed
+def _tc024_click_entertainment(driver):
+    # TC023 leaves the app on the Voice results page. Entertainment is exposed
     # on the Kwat Ti Po Ya category screen. Back returns to Home, so reopen
     # that section before selecting Entertainment.
     back_button = WebDriverWait(driver, 10).until(
@@ -892,10 +1000,10 @@ def _tc023_click_entertainment(driver):
             and element.is_displayed()
         )
     )
-    _click_visible_item(driver, "Entertainment", "TC023")
+    _click_visible_item(driver, "Entertainment", "TC024")
 
 
-def _tc024_click_setting(driver):
+def _tc025_click_setting(driver):
     _tc008_return_home(driver)
     WebDriverWait(driver, 20).until(
         lambda current_driver: (
@@ -918,10 +1026,25 @@ def _tc024_click_setting(driver):
             == "true"
         )
     )
-    _capture_evidence(driver, "TC024", "setting_screen")
+    _capture_evidence(driver, "TC025", "setting_screen")
 
 
-def _tc025_click_all_balances(driver):
+def _tc027_click_all_balances(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+    settings_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment")
+        )
+    )
+    settings_tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: current_driver.find_element(
+            AppiumBy.ID,
+            f"{ATOM_APP_PACKAGE}:id/settingsFragment",
+        ).get_attribute("selected") == "true"
+    )
+
     all_balances_label = WebDriverWait(driver, 20).until(
         lambda current_driver: (
             element
@@ -946,10 +1069,10 @@ def _tc025_click_all_balances(driver):
             and title.is_displayed()
         )
     )
-    _capture_evidence(driver, "TC025", "all_balances_screen")
+    _capture_evidence(driver, "TC027", "all_balances_screen")
 
 
-def _tc026_click_prepaid_plan(driver):
+def _tc028_click_prepaid_plan(driver):
     settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
 
     def _is_settings_screen(current_driver):
@@ -991,10 +1114,10 @@ def _tc026_click_prepaid_plan(driver):
             and not _is_settings_screen(current_driver)
         )
     )
-    _capture_evidence(driver, "TC026", "prepaid_plan_screen")
+    _capture_evidence(driver, "TC028", "prepaid_plan_screen")
 
 
-def _tc027_click_usage_and_purchased_history(driver):
+def _tc029_click_usage_and_purchased_history(driver):
     settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
     settings_labels = ("All Balances", "Prepaid Plan", "Usage and Purchased History")
 
@@ -1054,10 +1177,10 @@ def _tc027_click_usage_and_purchased_history(driver):
     WebDriverWait(driver, 20).until(
         _is_history_screen
     )
-    _capture_evidence(driver, "TC027", "usage_and_purchased_history_screen")
+    _capture_evidence(driver, "TC029", "usage_and_purchased_history_screen")
 
 
-def _tc028_share_atom_store_app(driver):
+def _tc030_share_atom_store_app(driver):
     settings_tab_id = f"{ATOM_APP_PACKAGE}:id/settingsFragment"
     settings_labels = ("All Balances", "Prepaid Plan", "Share ATOM Store App")
 
@@ -1103,12 +1226,298 @@ def _tc028_share_atom_store_app(driver):
             )
         )
     except TimeoutException as error:
-        _capture_evidence(driver, "TC028", "share_no_visible_response")
+        _capture_evidence(driver, "TC030", "share_no_visible_response")
         raise AssertionError(
             "Clicking Share ATOM Store App produced no visible response."
         ) from error
 
-    _capture_evidence(driver, "TC028", "share_interface")
+    _capture_evidence(driver, "TC030", "share_interface")
+
+
+def _tc031_click_change_language(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+
+    settings_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment")
+        )
+    )
+    settings_tab.click()
+
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: current_driver.find_element(
+            AppiumBy.ID,
+            f"{ATOM_APP_PACKAGE}:id/settingsFragment",
+        ).get_attribute("selected") == "true"
+    )
+    language_labels = (
+        "Change language",
+        "??????????????????????????????????????????????????????",
+    )
+    change_language_bounds = None
+    for _ in range(8):
+        source = driver.page_source
+        change_language_bounds = next(
+            (
+                bounds
+                for label in language_labels
+                if (bounds := _tc007_clickable_bounds_for_label(source, label))
+                is not None
+            ),
+            None,
+        )
+        if change_language_bounds is not None:
+            break
+
+        scroll_view = next(
+            (
+                element
+                for element in driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.widget.ScrollView",
+                )
+                if element.is_displayed()
+                and element.is_enabled()
+                and element.get_attribute("scrollable") == "true"
+            ),
+            None,
+        )
+        if scroll_view is None:
+            break
+        can_scroll = driver.execute_script(
+            "mobile: scrollGesture",
+            {
+                "elementId": scroll_view.id,
+                "direction": "down",
+                "percent": 0.65,
+            },
+        )
+        source = driver.page_source
+        change_language_bounds = next(
+            (
+                bounds
+                for label in language_labels
+                if (bounds := _tc007_clickable_bounds_for_label(source, label))
+                is not None
+            ),
+            None,
+        )
+        if change_language_bounds is not None or not can_scroll:
+            break
+
+    if change_language_bounds is None:
+        raise AssertionError("TC031 could not find Change language in Settings.")
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    _tc007_click_bounds(driver, change_language_bounds)
+
+    try:
+        WebDriverWait(driver, 15).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC031", "change_language_no_visible_response")
+        raise AssertionError(
+            "Clicking Change language produced no visible response."
+        ) from error
+
+    _capture_evidence(driver, "TC031", "change_language_interface")
+
+
+def _tc032_click_store_location(driver):
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+
+    settings_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment")
+        )
+    )
+    settings_tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: current_driver.find_element(
+            AppiumBy.ID,
+            f"{ATOM_APP_PACKAGE}:id/settingsFragment",
+        ).get_attribute("selected") == "true"
+    )
+
+    location_bounds = None
+    for _ in range(8):
+        # Compose exposes this row as content-desc on some builds and as text
+        # on others. Resolve either form from the hierarchy, then use the
+        # clickable row's bounds because its child nodes report clickable=false.
+        location_bounds = _tc007_clickable_bounds_for_label(
+            driver.page_source,
+            "Store Location",
+        )
+        if location_bounds is not None:
+            break
+
+        scroll_view = next(
+            (
+                element
+                for element in driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.widget.ScrollView",
+                )
+                if element.is_displayed()
+                and element.is_enabled()
+                and element.get_attribute("scrollable") == "true"
+            ),
+            None,
+        )
+        if scroll_view is None:
+            raise AssertionError(
+                "TC032 could not find the scrollable Settings list."
+            )
+        can_scroll = driver.execute_script(
+            "mobile: scrollGesture",
+            {
+                "elementId": scroll_view.id,
+                "direction": "down",
+                "percent": 0.65,
+            },
+        )
+        # scrollGesture may return false on the gesture that first reveals the
+        # final row, so always inspect the updated hierarchy before stopping.
+        location_bounds = _tc007_clickable_bounds_for_label(
+            driver.page_source,
+            "Store Location",
+        )
+        if location_bounds is not None:
+            break
+        if not can_scroll:
+            break
+
+    if location_bounds is None:
+        raise AssertionError(
+            "TC032 could not find Store Location after scrolling Settings."
+        )
+
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    _tc007_click_bounds(driver, location_bounds)
+
+    try:
+        WebDriverWait(driver, 20).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC032", "store_location_no_visible_response")
+        raise AssertionError(
+            "Clicking Store Location produced no visible screen change."
+        ) from error
+
+    _capture_evidence(driver, "TC032", "store_location_screen")
+
+
+def _tc026_click_call_me_back(driver):
+    # TC025 opens Settings. Re-enter it explicitly because preceding cases may
+    # have left the app on another destination screen.
+    _tc008_return_home(driver)
+    WebDriverWait(driver, 20).until(_is_store_home_screen)
+    settings_tab = WebDriverWait(driver, 20).until(
+        EC.element_to_be_clickable(
+            (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/settingsFragment")
+        )
+    )
+    settings_tab.click()
+    WebDriverWait(driver, 20).until(
+        lambda current_driver: current_driver.find_element(
+            AppiumBy.ID,
+            f"{ATOM_APP_PACKAGE}:id/settingsFragment",
+        ).get_attribute("selected") == "true"
+    )
+
+    call_me_back_bounds = None
+    for _ in range(8):
+        call_me_back_bounds = _tc007_clickable_bounds_for_label(
+            driver.page_source,
+            "Call Me Back",
+        )
+        if call_me_back_bounds is not None:
+            break
+
+        scroll_view = next(
+            (
+                element
+                for element in driver.find_elements(
+                    AppiumBy.CLASS_NAME,
+                    "android.widget.ScrollView",
+                )
+                if element.is_displayed()
+                and element.is_enabled()
+                and element.get_attribute("scrollable") == "true"
+            ),
+            None,
+        )
+        if scroll_view is None:
+            raise AssertionError(
+                "TC026 could not find the scrollable Settings list."
+            )
+        can_scroll = driver.execute_script(
+            "mobile: scrollGesture",
+            {
+                "elementId": scroll_view.id,
+                "direction": "down",
+                "percent": 0.65,
+            },
+        )
+        # Inspect after the last gesture too; it can reveal the row while
+        # returning false to indicate that the list reached its end.
+        call_me_back_bounds = _tc007_clickable_bounds_for_label(
+            driver.page_source,
+            "Call Me Back",
+        )
+        if call_me_back_bounds is not None:
+            break
+        if not can_scroll:
+            break
+
+    if call_me_back_bounds is None:
+        raise AssertionError(
+            "TC026 could not find Call Me Back after scrolling Settings."
+        )
+
+    before_source = driver.page_source
+    before_screenshot = driver.get_screenshot_as_png()
+    _tc007_click_bounds(driver, call_me_back_bounds)
+    try:
+        WebDriverWait(driver, 20).until(
+            lambda current_driver: (
+                current_driver.page_source != before_source
+                or current_driver.get_screenshot_as_png() != before_screenshot
+            )
+        )
+    except TimeoutException as error:
+        _capture_evidence(driver, "TC026", "call_me_back_no_visible_response")
+        raise AssertionError(
+            "Clicking Call Me Back produced no visible response."
+        ) from error
+
+    result_root = ElementTree.fromstring(driver.page_source)
+    result_title = next(
+        (
+            (node.get("text") or "").strip()
+            for node in result_root.iter()
+            if node.get("resource-id") == f"{ATOM_APP_PACKAGE}:id/title"
+        ),
+        "",
+    )
+    if result_title.casefold() == "help":
+        _capture_evidence(driver, "TC026", "wrong_help_destination")
+        raise AssertionError(
+            "TC026 clicked Call Me Back but reached the Help screen."
+        )
+
+    _capture_evidence(driver, "TC026", "call_me_back_interface")
 
 
 def _click_visible_item(driver, label, testcase):
@@ -2146,7 +2555,23 @@ def _is_promotional_screen_visible(driver):
     has_dismissal_option = (
         has_dismissal_option or _promotional_close_point(driver) is not None
     )
-    return has_offer_content and has_dismissal_option
+    screen_width = int(root.get("width", "0"))
+    screen_height = int(root.get("height", "0"))
+    screen_area = screen_width * screen_height
+    has_large_overlay = screen_area > 0 and any(
+        node.tag.rsplit(".", 1)[-1] in {"FrameLayout", "ViewGroup"}
+        and node.get("displayed", "true").lower() == "true"
+        and (bounds := re.fullmatch(
+            r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]",
+            node.get("bounds", ""),
+        )) is not None
+        and (
+            (int(bounds.group(3)) - int(bounds.group(1)))
+            * (int(bounds.group(4)) - int(bounds.group(2)))
+        ) >= screen_area * 0.3
+        for node in nodes
+    )
+    return has_dismissal_option and (has_offer_content or has_large_overlay)
 
 
 def _promotional_close_point(driver):
@@ -2234,6 +2659,99 @@ def _is_in_app_notifications_screen(driver):
         for node in root.iter()
     )
     return has_notifications_title and has_back_control
+
+
+def _is_location_services_prompt_visible(driver):
+    root = ElementTree.fromstring(driver.page_source)
+    nodes = list(root.iter())
+    has_location_title = any(
+        node.get("text", "").strip().casefold() == "location-based services"
+        for node in nodes
+    )
+    has_not_now_control = any(
+        node.get("resource-id", "").endswith(":id/btnNotNow")
+        or node.get("text", "").strip().casefold() in {"not allow", "not now"}
+        for node in nodes
+    )
+    return has_location_title and has_not_now_control
+
+
+def _dismiss_location_services_prompt(driver):
+    if not _is_location_services_prompt_visible(driver):
+        return False
+
+    dismiss_locators = (
+        (AppiumBy.ID, f"{ATOM_APP_PACKAGE}:id/btnNotNow"),
+        (
+            AppiumBy.ANDROID_UIAUTOMATOR,
+            'new UiSelector().textMatches("(?i)^(not allow|not now)$")',
+        ),
+    )
+    dismiss_button = next(
+        (
+            element
+            for locator in dismiss_locators
+            for element in driver.find_elements(*locator)
+            if element.is_displayed() and element.is_enabled()
+        ),
+        None,
+    )
+    if dismiss_button is None:
+        raise TimeoutException(
+            "The Location-Based Services prompt is visible, but its "
+            "Not Allow control could not be located."
+        )
+
+    dismiss_button.click()
+    WebDriverWait(driver, 10).until(
+        lambda current_driver: not _is_location_services_prompt_visible(
+            current_driver
+        )
+    )
+    print("Dismissed the optional location services prompt.")
+    return True
+
+
+def _is_location_services_deactivated_dialog_visible(driver):
+    root = ElementTree.fromstring(driver.page_source)
+    text = " ".join(
+        (node.get("text") or "").strip().casefold()
+        for node in root.iter()
+    )
+    return (
+        "deactivated" in text
+        and _tc007_clickable_bounds_for_label(driver.page_source, "Okay")
+        is not None
+    )
+
+
+def _dismiss_location_services_deactivated_dialog(driver):
+    if not _is_location_services_deactivated_dialog_visible(driver):
+        return False
+
+    okay_button = _tc007_find_clickable_parent(driver, "Okay")
+    okay_bounds = _tc007_clickable_bounds_for_label(
+        driver.page_source,
+        "Okay",
+    )
+    if okay_button is None and okay_bounds is None:
+        raise TimeoutException(
+            "The location services confirmation is visible, but its Okay "
+            "control could not be located."
+        )
+    if okay_button is not None:
+        okay_button.click()
+    else:
+        _tc007_click_bounds(driver, okay_bounds)
+    WebDriverWait(driver, 10).until(
+        lambda current_driver: (
+            not _is_location_services_deactivated_dialog_visible(
+                current_driver
+            )
+        )
+    )
+    print("Acknowledged the location services confirmation.")
+    return True
 
 
 def _dismiss_in_app_notifications_screen(driver):
@@ -2412,6 +2930,12 @@ def _handle_pre_home_screens(driver):
         if _dismiss_in_app_notifications_screen(driver):
             continue
 
+        if _dismiss_location_services_prompt(driver):
+            continue
+
+        if _dismiss_location_services_deactivated_dialog(driver):
+            continue
+
         if _is_promotional_screen_visible(driver):
             if dismissed_promotions >= MAX_PROMOTIONAL_SCREENS:
                 raise TimeoutException(
@@ -2488,6 +3012,10 @@ def _handle_pre_home_screens(driver):
             lambda current_driver: (
                 _is_notification_permission_popup_visible(current_driver)
                 or _is_in_app_notifications_screen(current_driver)
+                or _is_location_services_prompt_visible(current_driver)
+                or _is_location_services_deactivated_dialog_visible(
+                    current_driver
+                )
                 or _is_home_tooltip_visible(current_driver)
                 or _is_promotional_screen_visible(current_driver)
                 or _is_store_home_screen(current_driver)
